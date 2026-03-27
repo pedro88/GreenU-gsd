@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { GardenCanvas } from '@/components/garden/GardenCanvas';
+import { XPToast } from '@/components/ui/XPToast';
 import { AddZoneDialog, AddPlotDialog, AddCropDialog } from '@/components/garden/GardenDialogs';
 import {
   useGetGardenVisualizationQuery,
@@ -63,8 +64,34 @@ export function GardenPageClient({
   const [changingRole, setChangingRole] = useState<string | null>(null);
   const [removingCollaborator, setRemovingCollaborator] = useState<string | null>(null);
 
+  // XP Toast state
+  const [xpToast, setXpToast] = useState<{
+    visible: boolean;
+    xp?: number;
+    level?: number;
+    previousLevel?: number;
+    type: 'xp' | 'levelup' | 'achievement';
+    achievementName?: string;
+    achievementIcon?: string;
+  }>({ visible: false, type: 'xp' });
+
   const canEdit = role === 'owner' || role === 'editor';
   const isOwner = role === 'owner';
+
+  const handleXpChange = useCallback(
+    (xp: number, leveledUp: boolean, newLevel: number, prevLevel: number) => {
+      if (xp > 0) {
+        setXpToast({
+          visible: true,
+          type: leveledUp ? 'levelup' : 'xp',
+          xp,
+          level: newLevel,
+          previousLevel: prevLevel,
+        });
+      }
+    },
+    []
+  );
 
   const { data, isLoading } = useGetGardenVisualizationQuery(gardenId);
   const [createZone] = useCreateZoneMutation();
@@ -576,6 +603,76 @@ export function GardenPageClient({
           onSubmit={handleCreateCrop}
         />
       )}
+
+      {/* XP / Achievement Toast */}
+      <XPToast
+        visible={xpToast.visible}
+        type={xpToast.type}
+        xp={xpToast.xp}
+        level={xpToast.level}
+        previousLevel={xpToast.previousLevel}
+        achievementName={xpToast.achievementName}
+        achievementIcon={xpToast.achievementIcon}
+        onClose={() => setXpToast((t) => ({ ...t, visible: false }))}
+      />
+
+      {/* Poll for XP changes — triggers toast when XP awarded */}
+      <XpPoller gardenId={gardenId} onXpChange={handleXpChange} />
     </div>
   );
+}
+
+/**
+ * Polls the game-stats API every 3 seconds while on the garden page
+ * to detect XP changes from cultivation actions and trigger toasts.
+ * @param props.gardenId - Garden ID (used to identify the session context)
+ * @param root0
+ * @param root0.gardenId
+ * @param props.onXpChange - Callback fired when XP changes are detected
+ * @param root0.onXpChange
+ * @returns null (renders nothing)
+ */
+function XpPoller({
+  gardenId: _gardenId,
+  onXpChange,
+}: {
+  gardenId: string;
+  onXpChange: (xp: number, leveledUp: boolean, newLevel: number, prevLevel: number) => void;
+}) {
+  const [lastXp, setLastXp] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    /**
+     *
+     */
+    async function poll() {
+      try {
+        const res = await fetch('/api/profile/game-stats');
+        if (res.ok) {
+          const data = await res.json();
+          if (lastXp !== null && data.totalXp > lastXp) {
+            const gained = data.totalXp - lastXp;
+            const leveledUp = data.level > (lastXp > 0 ? Math.floor(Math.sqrt(lastXp / 100)) : 1);
+            const prevLevel = Math.floor(Math.sqrt(lastXp / 100));
+            if (!cancelled) onXpChange(gained, leveledUp, data.level, prevLevel);
+          }
+          if (!cancelled) setLastXp(data.totalXp);
+        }
+      } catch {
+        // ignore polling errors
+      }
+    }
+
+    // Initial fetch
+    poll();
+    const interval = setInterval(poll, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [lastXp, onXpChange]);
+
+  return null;
 }

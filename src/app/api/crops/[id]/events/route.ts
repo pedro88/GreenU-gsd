@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
+import { addXpByEvent, updateStreak } from '@/lib/xpService';
 
 /**
  * POST /api/crops/[cropId]/events
@@ -100,6 +101,20 @@ export async function POST(
           ...(quantity && { quantity }),
         },
       });
+    }
+
+    // Award XP and update streak — XP goes to garden owner
+    const garden = await prisma.garden.findUnique({
+      where: { id: gardenId },
+      select: { userId: true },
+    });
+    if (garden) {
+      addXpByEvent({
+        userId: garden.userId,
+        eventType,
+        metadata: { cropId, eventType },
+      }).catch(console.error);
+      updateStreak(garden.userId).catch(console.error);
     }
 
     return NextResponse.json(event, { status: 201 });

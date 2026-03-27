@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
+import { addXpByEvent, updateStreak } from '@/lib/xpService';
 
 /**
  * GET /api/crops/[id]
@@ -159,6 +160,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           notes: notes || 'Harvest recorded',
         },
       });
+
+      // Award XP for harvest — goes to garden owner
+      const garden = await prisma.garden.findUnique({
+        where: { id: existing.plot.zone.gardenId },
+        select: { userId: true },
+      });
+      if (garden) {
+        addXpByEvent({
+          userId: garden.userId,
+          eventType: 'HARVEST',
+          metadata: { cropId: id },
+        }).catch(console.error);
+        updateStreak(garden.userId).catch(console.error);
+      }
     }
 
     return NextResponse.json(crop);

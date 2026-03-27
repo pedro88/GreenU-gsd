@@ -19,6 +19,18 @@ interface UserProfile {
   createdAt: string;
 }
 
+interface GameStats {
+  totalXp: number;
+  level: number;
+  currentStreak: number;
+  longestStreak: number;
+  progress: {
+    xpInLevel: number;
+    xpForNextLevel: number;
+    percent: number;
+  };
+}
+
 interface Garden {
   id: string;
   name: string;
@@ -37,6 +49,7 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [gardens, setGardens] = useState<Garden[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingLocation, setSavingLocation] = useState(false);
@@ -84,9 +97,25 @@ export default function ProfilePage() {
       }
     }
 
+    /**
+     * Fetches the user's gamification stats (XP, level, streak) from the API.
+     */
+    async function fetchGameStats() {
+      try {
+        const response = await fetch('/api/profile/game-stats');
+        if (response.ok) {
+          const data = await response.json();
+          setGameStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch game stats:', error);
+      }
+    }
+
     if (session?.user) {
       fetchProfile();
       fetchGardens();
+      fetchGameStats();
     }
   }, [session]);
 
@@ -157,6 +186,73 @@ export default function ProfilePage() {
           Sign Out
         </button>
       </div>
+
+      {/* Game Stats — XP Bar */}
+      {gameStats && (
+        <div
+          className="pixel-card mb-8"
+          style={{ background: 'linear-gradient(135deg, #302818 0%, #4A3728 100%)' }}
+        >
+          <div className="flex items-center gap-4 mb-3">
+            {/* Level badge */}
+            <div
+              className="flex items-center justify-center w-14 h-14 font-pixel text-xl font-bold border-[3px] border-ink-800"
+              style={{ background: '#FFCC4D', boxShadow: '3px 3px 0px #302818' }}
+            >
+              {gameStats.level}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-pixel text-xs font-bold text-cream-100 tracking-widest">
+                  LVL {gameStats.level}
+                </span>
+                <span className="font-pixel text-xs text-cream-200">
+                  {gameStats.progress.xpInLevel} / {gameStats.progress.xpForNextLevel} XP
+                </span>
+              </div>
+              {/* XP progress bar */}
+              <div
+                className="h-4 border-[2px] border-ink-800 relative overflow-hidden"
+                style={{ background: '#5C4B26' }}
+              >
+                <div
+                  className="h-full transition-all duration-500"
+                  style={{
+                    width: `${gameStats.progress.percent}%`,
+                    background: 'linear-gradient(90deg, #CC6B47 0%, #FF7755 100%)',
+                  }}
+                />
+                {/* Pixel pattern overlay */}
+                <div
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage:
+                      'repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.15) 8px, rgba(0,0,0,0.15) 16px)',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Streak + XP total */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🔥</span>
+              <span className="font-pixel text-xs font-bold text-cream-100">
+                {gameStats.currentStreak} day streak
+              </span>
+              {gameStats.currentStreak > 1 && (
+                <span className="font-pixel text-xs text-cream-300">
+                  (best: {gameStats.longestStreak})
+                </span>
+              )}
+            </div>
+            <div className="font-pixel text-xs text-cream-200">
+              Total: <span className="text-terracotta-300 font-bold">{gameStats.totalXp}</span> XP
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Profile Header */}
       <div className="pixel-card mb-8">

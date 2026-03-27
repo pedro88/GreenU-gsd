@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface GameStats {
+  level: number;
+  currentStreak: number;
+}
 
 const navLinks = [
   { href: '/discover', label: 'Discover', icon: '🌍' },
@@ -15,7 +20,7 @@ const navLinks = [
 
 /**
  * Retro Sega/SNES-era navigation bar with chunky pixel styling.
- * Shows logo, nav links, and user menu dropdown.
+ * Shows logo, nav links, level badge, and user menu dropdown.
  * @returns The retro navigation bar JSX
  */
 export function RetroNav() {
@@ -23,6 +28,29 @@ export function RetroNav() {
   const { data: session } = useSession();
   const [showMenu, setShowMenu] = useState(false);
   const [showMobile, setShowMobile] = useState(false);
+  const [gameStats, setGameStats] = useState<GameStats | null>(null);
+
+  // Fetch game stats when session is available
+  useEffect(() => {
+    if (!session?.user) {
+      setGameStats(null);
+      return;
+    }
+
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/profile/game-stats');
+        if (res.ok) {
+          const data = await res.json();
+          setGameStats({ level: data.level, currentStreak: data.currentStreak });
+        }
+      } catch {
+        // silently fail — gamification is optional
+      }
+    };
+
+    fetchStats();
+  }, [session]);
 
   return (
     <nav className="retro-nav sticky top-0 z-50">
@@ -73,6 +101,16 @@ export function RetroNav() {
                   <span className="hidden sm:inline text-ink-700">
                     {session.user?.name?.split(' ')[0] ?? 'Player'}
                   </span>
+                  {/* Level badge */}
+                  {gameStats && (
+                    <span
+                      className="hidden sm:inline-flex items-center justify-center w-5 h-5 text-[10px] font-pixel font-bold border-[2px] border-ink-800"
+                      style={{ background: '#FFCC4D', boxShadow: '1px 1px 0px #302818' }}
+                      title={`Level ${gameStats.level}`}
+                    >
+                      {gameStats.level}
+                    </span>
+                  )}
                   <span className="text-xs">{showMenu ? '▲' : '▼'}</span>
                 </button>
 
@@ -81,7 +119,27 @@ export function RetroNav() {
                     className="absolute right-0 top-full mt-2 w-48 retro-dialog z-50"
                     style={{ boxShadow: '5px 5px 0px #302818' }}
                   >
-                    <div className="pixel-divider" />
+                    {/* Game stats in dropdown */}
+                    {gameStats && (
+                      <>
+                        <div className="px-4 py-2 flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-base">🔥</span>
+                            <span className="font-pixel text-[10px] text-ink-600">
+                              {gameStats.currentStreak} day streak
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center justify-center w-6 h-6 text-[10px] font-pixel font-bold border-[2px] border-ink-800"
+                            style={{ background: '#FFCC4D' }}
+                            title={`Level ${gameStats.level}`}
+                          >
+                            {gameStats.level}
+                          </div>
+                        </div>
+                        <div className="pixel-divider" />
+                      </>
+                    )}
                     <Link
                       href="/profile"
                       className="block px-4 py-2 font-pixel text-xs font-semibold text-ink-700 hover:bg-cream-200 transition-colors"

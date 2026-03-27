@@ -110,6 +110,7 @@ interface StatCardProps {
  * @param props.value - The numeric or string metric value to display prominently
  * @param props.icon - Emoji icon displayed alongside the label
  * @param props._color - Tailwind CSS classes for the card background and text color (unused, reserved)
+ * @param props.color
  * @param props.subtitle - Optional secondary text shown below the value
  * @returns The rendered stat card element
  */

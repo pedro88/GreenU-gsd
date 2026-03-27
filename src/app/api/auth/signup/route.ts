@@ -44,6 +44,9 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         name: name || null,
+        userStats: {
+          create: {},
+        },
       },
     });
 

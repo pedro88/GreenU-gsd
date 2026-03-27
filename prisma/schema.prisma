@@ -84,6 +84,7 @@ model User {
   messages     Message[]
   clients       Client[]
   assignedTasks Task[]
+  userStats     UserStats?
 }
 
 // ============================================
@@ -463,4 +464,158 @@ enum TaskStatus {
   IN_PROGRESS
   DONE
   CANCELLED
+}
+
+// ============================================
+// Gamification
+// ============================================
+
+/// UserStats - per-user gamification state
+model UserStats {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  totalXp        Int      @default(0)
+  level          Int      @default(1)
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastActiveDate DateTime @default(now()) // Date only (time stripped in service layer)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xpEvents     XpEventLog[]
+  achievements  UserAchievement[]
+  quests       UserQuest[]
+
+  @@index([userId])
+  @@index([totalXp])
+}
+
+/// XpEventLog - immutable log of every XP award
+model XpEventLog {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  reason    XpReason
+  metadata  String?  // JSON string with extra context (e.g. {"cropId": "...", "eventType": "HARVEST"})
+  createdAt DateTime @default(now())
+
+  user UserStats @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum XpReason {
+  GARDEN_CREATE    // +200 XP — create first garden
+  SOW               // +50 XP — sow a crop
+  HARVEST           // +100 XP — harvest a crop
+  WATER             // +10 XP — water a crop
+  FERTILIZE         // +15 XP — fertilize
+  PRUNE             // +10 XP — prune
+  PEST_CONTROL      // +20 XP — pest control
+  NOTE              // +15 XP — add a note
+  FIRST_LOGIN       // +10 XP — first action of the day (streak bonus)
+  STREAK_BONUS      // +(streak × 5) XP — streak maintained
+  QUEST_COMPLETE    // varies — quest XP reward
+  ACHIEVEMENT       // varies — achievement XP reward
+  LEVEL_UP          // +50 XP — level up bonus
+  SOCIAL_SHARE      // +30 XP — share a garden
+  FIRST_FOLLOWER    // +50 XP — get first follower
+  INVITE_FRIEND     // +100 XP — invite someone
+}
+
+/// Achievement - definition of an achievement
+model Achievement {
+  id            String          @id @default(cuid())
+  code          String          @unique // e.g. "first_harvest", "level_5"
+  name          String          // Display name
+  description   String          // How to unlock
+  icon          String          // Emoji or icon identifier
+  category      AchievementCategory
+  rarity        AchievementRarity @default(COMMON)
+  criteriaType  String          // e.g. "harvest_count", "level", "streak"
+  criteriaValue Int             // Threshold value
+  xpReward      Int             // XP bonus on unlock
+  createdAt     DateTime        @default(now())
+
+  userAchievements UserAchievement[]
+
+  @@index([criteriaType])
+  @@index([category])
+}
+
+enum AchievementCategory {
+  CULTIVATION  // Plant, harvest, crop-related
+  SOCIAL        // Followers, sharing, messaging
+  STREAKS       // Daily streaks
+  LEVELS        // Level milestones
+  SPECIAL       // Rare/complex achievements
+}
+
+enum AchievementRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+/// UserAchievement - tracks which achievements a user has unlocked
+model UserAchievement {
+  id           String   @id @default(cuid())
+  userId       String
+  achievementId String
+  unlockedAt   DateTime @default(now())
+
+  user       UserStats   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+}
+
+/// Quest - quest template and active user quests
+model Quest {
+  id            String    @id @default(cuid())
+  type          QuestType // DAILY or SEASONAL
+  title         String
+  description   String
+  targetMetric  String    // e.g. "harvest", "sow", "water", "note"
+  targetValue   Int       // Number to reach
+  xpReward      Int
+  icon          String    // Emoji or icon
+  seasonStart   DateTime? // For seasonal: when the challenge starts
+  seasonEnd     DateTime? // For seasonal: when the challenge ends
+  createdAt    DateTime  @default(now())
+
+  userQuests UserQuest[]
+
+  @@index([type])
+  @@index([seasonStart, seasonEnd])
+}
+
+enum QuestType {
+  DAILY   // Refreshes every day at midnight UTC
+  SEASONAL // Monthly gardening challenges
+}
+
+/// UserQuest - tracks a user's progress on a quest
+model UserQuest {
+  id          String    @id @default(cuid())
+  userId      String
+  questId     String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user  UserStats @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([userId])
+  @@index([completed])
 }

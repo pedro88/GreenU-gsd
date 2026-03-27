@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { addXpByEvent } from '@/lib/xpService';
 
 /**
  * GET /api/gardens
@@ -86,6 +87,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         zones: true,
       },
     });
+
+    // Award XP for first garden creation
+    addXpByEvent({
+      userId: session.user.id,
+      eventType: 'GARDEN_CREATE',
+      metadata: { gardenId: garden.id },
+    }).catch(console.error);
 
     return NextResponse.json(garden, { status: 201 });
   } catch (error) {

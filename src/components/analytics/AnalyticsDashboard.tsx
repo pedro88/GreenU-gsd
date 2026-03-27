@@ -109,11 +109,11 @@ interface StatCardProps {
  * @param props.label - Short uppercase label for the stat metric
  * @param props.value - The numeric or string metric value to display prominently
  * @param props.icon - Emoji icon displayed alongside the label
- * @param props._color - Tailwind CSS classes for the card background and text color (reserved for future use)
+ * @param props._color - Tailwind CSS classes for the card background and text color (unused, reserved)
  * @param props.subtitle - Optional secondary text shown below the value
  * @returns The rendered stat card element
  */
-function StatCard({ label, value, icon, _color, subtitle }: StatCardProps) {
+function StatCard({ label, value, icon, color: _color, subtitle }: StatCardProps) {
   return (
     <div className={`stat-card`}>
       <div className="flex items-center gap-2 mb-1">

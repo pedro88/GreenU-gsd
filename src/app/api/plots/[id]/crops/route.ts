@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canWriteGarden } from '@/lib/gardenAccess';
 import { addXpByEvent, updateStreak } from '@/lib/xpService';
+import { updateQuestProgress } from '@/lib/questService';
 
 /**
  * POST /api/plots/[plotId]/crops
@@ -129,6 +130,7 @@ export async function POST(
         metadata: { cropId: crop.id, plantType: plantType.name },
       }).catch(console.error);
       updateStreak(garden.userId).catch(console.error);
+      updateQuestProgress(garden.userId, 'SOWING').catch(console.error);
     }
 
     return NextResponse.json(crop, { status: 201 });

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 import { addXpByEvent, updateStreak } from '@/lib/xpService';
 import { checkAchievements } from '@/lib/achievementService';
+import { updateQuestProgress } from '@/lib/questService';
 
 /**
  * GET /api/crops/[id]
@@ -179,6 +180,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           eventType: 'HARVEST',
           eventDate: harvestedDate || undefined,
         }).catch(console.error);
+        updateQuestProgress(garden.userId, 'HARVEST').catch(console.error);
       }
     }
 

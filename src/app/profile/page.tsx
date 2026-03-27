@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { AchievementGrid } from '@/components/profile/AchievementGrid';
+import { QuestTracker } from '@/components/profile/QuestTracker';
 
 interface UserProfile {
   id: string;
@@ -257,6 +258,9 @@ export default function ProfilePage() {
 
       {/* Achievement Grid */}
       <AchievementGrid />
+
+      {/* Quest Tracker */}
+      <QuestTracker />
 
       {/* Profile Header */}
       <div className="pixel-card mb-8">

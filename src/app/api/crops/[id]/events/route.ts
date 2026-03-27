@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 import { addXpByEvent, updateStreak } from '@/lib/xpService';
 import { checkAchievements } from '@/lib/achievementService';
+import { updateQuestProgress } from '@/lib/questService';
 
 /**
  * POST /api/crops/[cropId]/events
@@ -123,6 +124,8 @@ export async function POST(
         eventDate: date,
         metadata: { cropId },
       }).catch(console.error);
+      // Update daily quest progress
+      updateQuestProgress(garden.userId, eventType).catch(console.error);
     }
 
     return NextResponse.json(event, { status: 201 });

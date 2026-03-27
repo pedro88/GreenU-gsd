@@ -1,0 +1,67 @@
+'use client';
+
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+
+interface CropFamilyChartProps {
+  data: { name: string; count: number }[];
+}
+
+/**
+ * Pie chart showing distribution of crops by plant family
+ */
+export function CropFamilyChart({ data }: CropFamilyChartProps) {
+  const COLORS = [
+    '#16a34a', // green
+    '#2563eb', // blue
+    '#9333ea', // purple
+    '#ea580c', // orange
+    '#db2777', // pink
+    '#0891b2', // cyan
+    '#ca8a04', // yellow
+    '#64748b', // slate
+  ];
+
+  if (data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+        No crops planted yet
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          innerRadius={40}
+          outerRadius={75}
+          paddingAngle={2}
+          dataKey="count"
+          nameKey="name"
+        >
+          {data.map((_entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+          formatter={(value, name) => [`${value} crops`, name as string]}
+        />
+        <Legend
+          wrapperStyle={{ fontSize: 11 }}
+          formatter={(value: string) => <span style={{ color: '#374151' }}>{value}</span>}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+}

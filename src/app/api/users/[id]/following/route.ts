@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
 /**
  * GET /api/users/[id]/following
- * Get paginated list of users that this user follows
- * No auth required — public info
+ * Get paginated list of users that this user follows.
+ * No auth required — public info.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with user ID
+ * @returns Paginated list of followed users with next cursor, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);

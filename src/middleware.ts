@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+/**
+ * Next.js middleware that handles route protection and authentication redirects.
+ * Protects /profile, /garden, /messages, /clients, /calendar, and /analytics routes.
+ * @param request - The incoming Next.js request
+ * @returns A Next.js response (either the next step or a redirect)
+ */
 export default async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // Skip for static files and API routes
-  if (
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.includes('.')
-  ) {
+  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.includes('.')) {
     return NextResponse.next();
   }
 
@@ -36,9 +38,7 @@ export default async function middleware(request: NextRequest) {
   // If user is not logged in and trying to access protected route
   if (!hasSession && isProtectedRoute && !isPublicRoute) {
     const callbackUrl = encodeURIComponent(pathname + search);
-    return NextResponse.redirect(
-      new URL(`/auth/signin?callbackUrl=${callbackUrl}`, request.url)
-    );
+    return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${callbackUrl}`, request.url));
   }
 
   // If user is on auth page and already logged in, redirect to home
@@ -50,7 +50,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

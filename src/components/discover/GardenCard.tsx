@@ -22,17 +22,23 @@ interface GardenCardProps {
 /**
  * Card for displaying a garden in the discover feed.
  * Shows garden name, owner, location, zones, top crops, follower count, and follow button.
+ * @param root0 - Destructured props object
+ * @param root0.garden - The garden data to display
+ * @param root0.followingIds - Set of user IDs that the current user follows
+ * @param root0.onFollow - Callback when follow button is clicked
+ * @returns The garden card component
  */
 export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) {
   const [following, setFollowing] = useState(followingIds.has(garden.owner.id));
   const [loading, setLoading] = useState(false);
 
-  const ownerInitials = garden.owner.name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) || '?';
+  const ownerInitials =
+    garden.owner.name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || '?';
 
   const handleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -80,9 +86,10 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
                 onClick={handleFollow}
                 disabled={loading}
                 className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors
-                  ${following
-                    ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    : 'bg-green-600 text-white hover:bg-green-500'
+                  ${
+                    following
+                      ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-green-600 text-white hover:bg-green-500'
                   } disabled:opacity-50`}
               >
                 {loading ? '...' : following ? 'Following' : '+ Follow'}
@@ -121,10 +128,7 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
         {garden.topCrops.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {garden.topCrops.map((crop) => (
-              <span
-                key={crop}
-                className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
-              >
+              <span key={crop} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                 {crop}
               </span>
             ))}

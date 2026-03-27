@@ -71,11 +71,11 @@ test.describe('M002: Social Sharing — S01 Public Garden', () => {
       await page.goto('/profile');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(500);
-      
+
       // Check if garden already exists, if not create one
       const existingGarden = page.locator('a[href^="/garden/"]').first();
       const hasGarden = await existingGarden.isVisible().catch(() => false);
-      
+
       if (!hasGarden) {
         await page.getByRole('button', { name: /\+ new garden/i }).click();
         await page.waitForTimeout(300);
@@ -122,7 +122,7 @@ test.describe('M002: Social Sharing — S01 Public Garden', () => {
       await page.goto('/profile');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(500);
-      
+
       await page.getByRole('button', { name: /\+ new garden/i }).click();
       await page.waitForTimeout(300);
       await page.locator('input[placeholder*="Garden name"]').fill('Public Access Garden');
@@ -172,7 +172,7 @@ test.describe('M002: Social Sharing — S01 Public Garden', () => {
       await page.goto('/profile');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(500);
-      
+
       await page.getByRole('button', { name: /\+ new garden/i }).click();
       await page.waitForTimeout(300);
       await page.locator('input[placeholder*="Garden name"]').fill('Private Garden Test');
@@ -202,7 +202,9 @@ test.describe('M002: Social Sharing — S01 Public Garden', () => {
       await page.waitForLoadState('networkidle');
 
       // Should show private garden error
-      await expect(page.locator('text="Private Garden"').or(page.locator('text=/private garden/i'))).toBeVisible({ timeout: 5000 });
+      await expect(
+        page.locator('text="Private Garden"').or(page.locator('text=/private garden/i'))
+      ).toBeVisible({ timeout: 5000 });
     });
   });
 });
@@ -220,8 +222,12 @@ test.describe('M002: Social Sharing — S02 Follow System', () => {
   };
 
   test.beforeAll(async ({ request }) => {
-    await request.post('/api/auth/signup', { data: { name: follower.name, email: follower.email, password: follower.password } });
-    await request.post('/api/auth/signup', { data: { name: followed.name, email: followed.email, password: followed.password } });
+    await request.post('/api/auth/signup', {
+      data: { name: follower.name, email: follower.email, password: follower.password },
+    });
+    await request.post('/api/auth/signup', {
+      data: { name: followed.name, email: followed.email, password: followed.password },
+    });
   });
 
   test.beforeEach(async ({ page }) => {
@@ -241,7 +247,7 @@ test.describe('M002: Social Sharing — S02 Follow System', () => {
       await page.goto('/profile');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(500);
-      
+
       await page.getByRole('button', { name: /\+ new garden/i }).click();
       await page.waitForTimeout(300);
       await page.locator('input[placeholder*="Garden name"]').fill('Follow Target Garden');
@@ -275,7 +281,9 @@ test.describe('M002: Social Sharing — S02 Follow System', () => {
       await page.waitForTimeout(1000);
 
       // Follow button should be visible - look for the follow button in header
-      const followBtn = page.locator('button:has-text("+ Follow"), button:has-text("Following")').first();
+      const followBtn = page
+        .locator('button:has-text("+ Follow"), button:has-text("Following")')
+        .first();
       await expect(followBtn).toBeVisible({ timeout: 5000 });
 
       const initialText = await followBtn.textContent();
@@ -283,11 +291,15 @@ test.describe('M002: Social Sharing — S02 Follow System', () => {
         await followBtn.click();
         await page.waitForTimeout(1000);
         // Should now say "Following"
-        await expect(page.locator('button:has-text("Following")').first()).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('button:has-text("Following")').first()).toBeVisible({
+          timeout: 5000,
+        });
       }
     });
 
-    test('should show updated follower/following counts on profile after follow', async ({ page }) => {
+    test('should show updated follower/following counts on profile after follow', async ({
+      page,
+    }) => {
       // Sign in as followed user
       await page.goto('/auth/signin');
       await page.getByLabel(/email/i).fill(followed.email);
@@ -405,9 +417,13 @@ test.describe('M002: Social Sharing — S03 Discover Feed', () => {
 
         // Should navigate to the garden page
         if (gardenHref) {
-          await page.waitForURL(new RegExp(gardenHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), { timeout: 5000 }).catch(() => {
-            // If URL doesn't match, check we're on a garden page
-          });
+          await page
+            .waitForURL(new RegExp(gardenHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), {
+              timeout: 5000,
+            })
+            .catch(() => {
+              // If URL doesn't match, check we're on a garden page
+            });
         }
 
         // Verify we're on a garden page (either gardens or discover back)
@@ -426,10 +442,10 @@ test.describe('M002: Social Sharing — S03 Discover Feed', () => {
       await page.getByLabel(/email/i).fill(discoverUser.email);
       await page.getByLabel(/password/i).fill(discoverUser.password);
       await page.getByRole('button', { name: /sign in/i }).click();
-      
+
       // Wait for sign in to complete
       await page.waitForTimeout(3000);
-      
+
       // Navigate to discover
       await page.goto('/discover');
       await page.waitForLoadState('networkidle');
@@ -440,7 +456,9 @@ test.describe('M002: Social Sharing — S03 Discover Feed', () => {
 
       if (count > 0) {
         // Follow button should be visible in cards
-        const followBtn = cards.first().locator('button:has-text("+ Follow"), button:has-text("Following")');
+        const followBtn = cards
+          .first()
+          .locator('button:has-text("+ Follow"), button:has-text("Following")');
         await expect(followBtn).toBeVisible({ timeout: 3000 });
       } else {
         test.skip(true, 'No public gardens to test follow button');

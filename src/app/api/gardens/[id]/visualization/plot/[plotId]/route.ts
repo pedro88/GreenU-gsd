@@ -2,16 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { canReadGarden } from '@/lib/gardenAccess';
-import { z } from 'zod';
 
 /**
  * GET /api/gardens/[id]/visualization/plot/[plotId]
- * Returns detailed visualization data for a single plot including current crops and companions
+ * Returns detailed visualization data for a single plot including current crops and companions.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with garden ID and plot ID
+ * @returns The plot data with zone info, crops, and rotation history, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; plotId: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id, plotId } = await params;
     const session = await auth();
@@ -50,9 +53,6 @@ export async function GET(
     return NextResponse.json(plot);
   } catch (error) {
     console.error('Failed to fetch plot visualization:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch plot visualization' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch plot visualization' }, { status: 500 });
   }
 }

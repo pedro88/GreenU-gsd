@@ -9,7 +9,12 @@ interface ConversationPreview {
   id: string;
   garden: { id: string; name: string } | null;
   participants: Array<{ id: string; name: string | null; email: string; image: string | null }>;
-  otherParticipants: Array<{ id: string; name: string | null; email: string; image: string | null }>;
+  otherParticipants: Array<{
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  }>;
   lastMessage: {
     id: string;
     content: string;
@@ -21,6 +26,12 @@ interface ConversationPreview {
   participantCount: number;
 }
 
+/**
+ * Formats a timestamp into a human-readable relative or absolute date string.
+ * Returns time for today, "Yesterday", weekday name for the last week, or month+day otherwise.
+ * @param dateStr - ISO date string of the message or conversation timestamp
+ * @returns Formatted date string (e.g., "2:30 PM", "Yesterday", "Mon", "Mar 15")
+ */
 function formatTime(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
@@ -38,7 +49,12 @@ function formatTime(dateStr: string): string {
   }
 }
 
-function getConversationTitle(conv: ConversationPreview, currentUserId: string): string {
+/**
+ * Derives a display title for a conversation based on garden name or participants.
+ * @param conv - The conversation preview object containing garden and participant info
+ * @returns The conversation title string (garden name, participant name, or participant list)
+ */
+function getConversationTitle(conv: ConversationPreview): string {
   if (conv.garden) return conv.garden.name;
   if (conv.otherParticipants.length === 1) {
     return conv.otherParticipants[0].name || conv.otherParticipants[0].email;
@@ -49,30 +65,35 @@ function getConversationTitle(conv: ConversationPreview, currentUserId: string):
     .join(', ');
 }
 
+/**
+ * Messages inbox page displaying all conversations for the current user.
+ * Shows a list of conversation previews with last message info, and a button to start new conversations.
+ * @returns The rendered messages inbox page with conversation list and new message dialog
+ */
 export default function MessagesPage() {
   const router = useRouter();
   const [conversations, setConversations] = useState<ConversationPreview[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [_currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches all conversations for the current user from the API.
+     * Also retrieves the current user session to populate the user ID state.
+     */
     async function fetchConversations() {
       try {
         const res = await fetch('/api/conversations');
         if (res.ok) {
           const data = await res.json();
           setConversations(data);
-          // Get current user ID from first conversation participant or session
-          const me = data?.[0]?.participants?.find(
-            (p: { id: string }) => p.id !== undefined
-          );
-          // We need to get the current user separately
+          // Get current user from session
           const meRes = await fetch('/api/auth/session');
           const meData = await meRes.json();
           setCurrentUserId(meData?.user?.id ?? null);
         }
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         setLoading(false);
@@ -138,7 +159,8 @@ export default function MessagesPage() {
               <div className="flex-shrink-0">
                 {conv.otherParticipants.length === 1 ? (
                   <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm">
-                    {(conv.otherParticipants[0].name || conv.otherParticipants[0].email)[0].toUpperCase()}
+                    {(conv.otherParticipants[0].name ||
+                      conv.otherParticipants[0].email)[0].toUpperCase()}
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs">
@@ -151,16 +173,14 @@ export default function MessagesPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 mb-0.5">
                   <div className="font-semibold text-gray-900 text-sm truncate">
-                    {getConversationTitle(conv, currentUserId ?? '')}
+                    {getConversationTitle(conv)}
                   </div>
                   <div className="text-xs text-gray-400 flex-shrink-0">
                     {conv.lastMessage && formatTime(conv.lastMessage.createdAt)}
                   </div>
                 </div>
                 {conv.garden && (
-                  <div className="text-xs text-green-600 mb-0.5">
-                    🌱 {conv.garden.name}
-                  </div>
+                  <div className="text-xs text-green-600 mb-0.5">🌱 {conv.garden.name}</div>
                 )}
                 {conv.lastMessage && (
                   <div className="text-xs text-gray-500 truncate">

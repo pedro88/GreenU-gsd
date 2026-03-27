@@ -1,9 +1,8 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -11,6 +10,11 @@ const languages = [
   { code: 'es', name: 'Español', flag: '🇪🇸' },
 ];
 
+/**
+ * Language selector dropdown allowing users to change their preferred language.
+ * Persists the selection to the user profile via the API.
+ * @returns The language selector dropdown JSX
+ */
 export function LanguageSelector() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -18,10 +22,11 @@ export function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('en');
 
+  // Handle language change — persists preference to backend and triggers UI update
   const handleLanguageChange = (langCode: string) => {
     setCurrentLang(langCode);
     setIsOpen(false);
-    
+
     startTransition(() => {
       // Update user preference in database
       fetch('/api/user/language', {
@@ -32,7 +37,11 @@ export function LanguageSelector() {
     });
   };
 
-  const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];
+  // Currently unused but intentionally declared — available for future locale-based routing
+  void router;
+  void pathname;
+
+  const currentLanguage = languages.find((l) => l.code === currentLang) || languages[0];
 
   return (
     <div className="relative">

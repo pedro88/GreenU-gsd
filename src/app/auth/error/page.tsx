@@ -4,6 +4,10 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
+/**
+ * Renders the error message content extracted from the URL search params.
+ * @returns The authentication error content JSX
+ */
 function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
@@ -34,13 +38,20 @@ function AuthErrorContent() {
   );
 }
 
+/**
+ * Authentication error page shown when NextAuth encounters an error during sign-in.
+ * Displays a user-friendly message based on the error type from the URL.
+ * @returns The authentication error page JSX
+ */
 export default function AuthErrorPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-600 border-t-transparent" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-600 border-t-transparent" />
+        </div>
+      }
+    >
       <AuthErrorContent />
     </Suspense>
   );

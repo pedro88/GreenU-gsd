@@ -6,7 +6,11 @@ import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 
 /**
  * POST /api/crops/[cropId]/events
- * Log a cultivation event for a crop (owner or editor)
+ * Log a cultivation event for a crop (owner or editor only).
+ * @param request - The incoming HTTP request with event data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the crop ID
+ * @returns The created cultivation event, or an error response
  */
 export async function POST(
   request: NextRequest,
@@ -33,22 +37,38 @@ export async function POST(
     const gardenId = cropLookup.plot.zone.gardenId;
     const canWrite = await canWriteGarden(session.user.id, gardenId);
     if (!canWrite) {
-      return NextResponse.json({ error: 'Not authorized to log events for this crop' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Not authorized to log events for this crop' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
-    const validation = z.object({
-      eventType: z.enum(['SOWING', 'TRANSPLANTING', 'WATERING', 'FERTILIZING', 'PRUNING', 'PEST_CONTROL', 'HARVEST', 'NOTE', 'OTHER']),
-      date: z.string().datetime().or(z.date()).transform((d) => new Date(d)),
-      notes: z.string().max(500).optional(),
-      quantity: z.number().positive().optional(),
-    }).safeParse(body);
+    const validation = z
+      .object({
+        eventType: z.enum([
+          'SOWING',
+          'TRANSPLANTING',
+          'WATERING',
+          'FERTILIZING',
+          'PRUNING',
+          'PEST_CONTROL',
+          'HARVEST',
+          'NOTE',
+          'OTHER',
+        ]),
+        date: z
+          .string()
+          .datetime()
+          .or(z.date())
+          .transform((d) => new Date(d)),
+        notes: z.string().max(500).optional(),
+        quantity: z.number().positive().optional(),
+      })
+      .safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { eventType, date, notes, quantity } = validation.data;
@@ -91,7 +111,11 @@ export async function POST(
 
 /**
  * GET /api/crops/[cropId]/events
- * Get all events for a crop (any garden reader)
+ * Get all events for a crop (any garden reader).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the crop ID
+ * @returns Array of cultivation events for the crop, or an error response
  */
 export async function GET(
   request: NextRequest,

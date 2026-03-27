@@ -11,8 +11,10 @@ import { prisma } from '@/lib/db';
  *   - sort: 'recent' | 'popular' (default: 'recent')
  *   - search: string (filter by garden name)
  *   - filterCrop: string (filter by plant type name)
+ * @param request - The incoming HTTP request
+ * @returns Paginated list of gardens with owner info, zones, and top crops, or an error response
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
 
@@ -46,9 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     const orderBy =
-      sort === 'popular'
-        ? { followerCount: 'desc' as const }
-        : { createdAt: 'desc' as const };
+      sort === 'popular' ? { followerCount: 'desc' as const } : { createdAt: 'desc' as const };
 
     const gardens = await prisma.garden.findMany({
       where,
@@ -82,9 +82,13 @@ export async function GET(request: NextRequest) {
     const hasMore = gardens.length > limit;
     const items = hasMore ? gardens.slice(0, -1) : gardens;
 
-    // Collect all plot IDs and plant type IDs in one pass
-    const plotIds = items.flatMap((g) => g.zones.flatMap((z) => z.plots.map((p) => p.id)));
-    const allPlantTypeIds = Array.from(new Set(items.flatMap((g) => g.zones.flatMap((z) => z.plots.flatMap((p) => p.crops.map((c) => c.plantTypeId))))));
+    const allPlantTypeIds = Array.from(
+      new Set(
+        items.flatMap((g) =>
+          g.zones.flatMap((z) => z.plots.flatMap((p) => p.crops.map((c) => c.plantTypeId)))
+        )
+      )
+    );
 
     // Batch fetch plant types (single query)
     const plantTypes = await prisma.plantType.findMany({
@@ -129,7 +133,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    const nextCursor = hasMore ? items[items.length - 1]?.id ?? null : null;
+    const nextCursor = hasMore ? (items[items.length - 1]?.id ?? null) : null;
 
     return NextResponse.json({
       gardens: gardenCards,

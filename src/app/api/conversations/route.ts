@@ -5,8 +5,9 @@ import { z } from 'zod';
 
 /**
  * GET /api/conversations
- * List all conversations for the authenticated user
- * Returns conversations sorted by last message (most recent first)
+ * List all conversations for the authenticated user.
+ * Returns conversations sorted by last message (most recent first).
+ * @returns Array of conversations with participants and last message preview, or an error response
  */
 export async function GET() {
   try {
@@ -57,9 +58,10 @@ export async function GET() {
         lastMessage: lastMessage
           ? {
               id: lastMessage.id,
-              content: lastMessage.content.length > 80
-                ? lastMessage.content.slice(0, 80) + '...'
-                : lastMessage.content,
+              content:
+                lastMessage.content.length > 80
+                  ? lastMessage.content.slice(0, 80) + '...'
+                  : lastMessage.content,
               senderId: lastMessage.senderId,
               senderName: lastMessage.sender.name,
               createdAt: lastMessage.createdAt,
@@ -85,10 +87,12 @@ const createConversationSchema = z.object({
 
 /**
  * POST /api/conversations
- * Create a new conversation or return existing one with the same participants
+ * Create a new conversation or return existing one with the same participants.
  * Body: { participantIds: string[], gardenId?: string, initialMessage?: string }
+ * @param request - The incoming HTTP request with conversation data
+ * @returns The created or existing conversation with isNew flag, or an error response
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -99,10 +103,7 @@ export async function POST(request: NextRequest) {
     const validation = createConversationSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { participantIds, gardenId, initialMessage } = validation.data;

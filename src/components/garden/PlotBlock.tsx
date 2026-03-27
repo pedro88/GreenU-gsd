@@ -10,8 +10,15 @@ interface PlotBlockProps {
 }
 
 /**
- * Individual plot block within a zone
- * Shows current crops with status indicators
+ * Individual plot block within a zone that shows current crops with status indicators.
+ * @param root0 - Props object
+ * @param root0.plotId - Unique identifier for the plot
+ * @param root0.name - Display name of the plot
+ * @param root0.crops - Array of crop summaries in this plot
+ * @param root0.canEdit - Whether the user can edit the plot
+ * @param root0.onAddCrop - Callback when adding a new crop
+ * @param root0.onViewCrop - Callback when viewing crop details
+ * @returns The rendered plot block element
  */
 export function PlotBlock({ plotId, name, crops, canEdit, onAddCrop, onViewCrop }: PlotBlockProps) {
   const statusColors: Record<string, string> = {

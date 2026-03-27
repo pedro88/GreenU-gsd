@@ -29,7 +29,9 @@ interface Garden {
 }
 
 /**
- * User profile page with garden management
+ * User profile page with garden management, location settings, and language preferences.
+ * Protected route requiring authentication.
+ * @returns The profile page JSX
  */
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -50,6 +52,9 @@ export default function ProfilePage() {
   }, [status, router]);
 
   useEffect(() => {
+    /**
+     * Fetches the user profile data from the API.
+     */
     async function fetchProfile() {
       try {
         const response = await fetch('/api/profile');
@@ -64,6 +69,9 @@ export default function ProfilePage() {
       }
     }
 
+    /**
+     * Fetches the user's garden list from the API.
+     */
     async function fetchGardens() {
       try {
         const response = await fetch('/api/gardens');
@@ -123,12 +131,15 @@ export default function ProfilePage() {
     return null;
   }
 
-  const initials = profile?.name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) || profile?.email?.[0].toUpperCase() || '?';
+  const initials =
+    profile?.name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) ||
+    profile?.email?.[0].toUpperCase() ||
+    '?';
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
@@ -208,7 +219,10 @@ export default function ProfilePage() {
             </button>
             <button
               type="button"
-              onClick={() => { setShowNewGarden(false); setNewGardenName(''); }}
+              onClick={() => {
+                setShowNewGarden(false);
+                setNewGardenName('');
+              }}
               className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
               Cancel
@@ -219,7 +233,9 @@ export default function ProfilePage() {
         {gardens.length === 0 && !showNewGarden ? (
           <div className="text-center py-8">
             <div className="text-3xl mb-2">🌱</div>
-            <p className="text-gray-500 text-sm mb-3">No gardens yet. Create your first garden to get started.</p>
+            <p className="text-gray-500 text-sm mb-3">
+              No gardens yet. Create your first garden to get started.
+            </p>
             <button
               onClick={() => setShowNewGarden(true)}
               className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors"
@@ -244,7 +260,9 @@ export default function ProfilePage() {
                       {garden.location && ` · ${garden.location}`}
                     </div>
                   </div>
-                  <span className="text-gray-300 group-hover:text-green-500 transition-colors">→</span>
+                  <span className="text-gray-300 group-hover:text-green-500 transition-colors">
+                    →
+                  </span>
                 </Link>
               </li>
             ))}
@@ -254,16 +272,12 @@ export default function ProfilePage() {
 
       {/* Account Info */}
       <div className="mb-8 rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
-          Account Information
-        </h3>
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Account Information</h3>
         <dl className="space-y-3">
           <div className="flex justify-between">
             <dt className="text-gray-500">Name</dt>
             <dd className="font-medium text-gray-900">
-              {profile?.name || (
-                <span className="text-gray-400">Not set</span>
-              )}
+              {profile?.name || <span className="text-gray-400">Not set</span>}
             </dd>
           </div>
           <div className="flex justify-between">
@@ -287,45 +301,53 @@ export default function ProfilePage() {
 
       {/* Language & Location Settings */}
       <div className="rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
-          Language Settings
-        </h3>
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Language Settings</h3>
         <div className="mb-6">
           <LanguageSelector />
         </div>
 
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
-          Location Settings
-        </h3>
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Location Settings</h3>
         <p className="mb-4 text-sm text-gray-500">
-          Set your location to get personalized planting recommendations based on your local climate.
+          Set your location to get personalized planting recommendations based on your local
+          climate.
         </p>
 
-        <form onSubmit={async (e) => {
-          e.preventDefault();
-          setSavingLocation(true);
-          setLocationSuccess(false);
-          const formData = new FormData(e.currentTarget);
-          try {
-            const response = await fetch('/api/profile', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
-                longitude: formData.get('longitude') ? parseFloat(formData.get('longitude') as string) : null,
-              }),
-            });
-            if (response.ok) {
-              setLocationSuccess(true);
-              const updated = await response.json();
-              setProfile((prev) => prev ? { ...prev, latitude: updated.latitude, longitude: updated.longitude } : prev);
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setSavingLocation(true);
+            setLocationSuccess(false);
+            const formData = new FormData(e.currentTarget);
+            try {
+              const response = await fetch('/api/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  latitude: formData.get('latitude')
+                    ? parseFloat(formData.get('latitude') as string)
+                    : null,
+                  longitude: formData.get('longitude')
+                    ? parseFloat(formData.get('longitude') as string)
+                    : null,
+                }),
+              });
+              if (response.ok) {
+                setLocationSuccess(true);
+                const updated = await response.json();
+                setProfile((prev) =>
+                  prev
+                    ? { ...prev, latitude: updated.latitude, longitude: updated.longitude }
+                    : prev
+                );
+              }
+            } catch (error) {
+              console.error('Failed to save location:', error);
+            } finally {
+              setSavingLocation(false);
             }
-          } catch (error) {
-            console.error('Failed to save location:', error);
-          } finally {
-            setSavingLocation(false);
-          }
-        }} className="space-y-4">
+          }}
+          className="space-y-4"
+        >
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">
@@ -375,9 +397,7 @@ export default function ProfilePage() {
             >
               {savingLocation ? 'Saving...' : 'Save Location'}
             </button>
-            {locationSuccess && (
-              <span className="text-sm text-green-600">Location updated!</span>
-            )}
+            {locationSuccess && <span className="text-sm text-green-600">Location updated!</span>}
           </div>
         </form>
       </div>

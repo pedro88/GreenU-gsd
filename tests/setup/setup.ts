@@ -1,6 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
+/**
+ * Playwright global setup: creates test users in the database for E2E tests.
+ * Runs once before all test suites.
+ */
 async function globalSetup() {
   const prisma = new PrismaClient();
 

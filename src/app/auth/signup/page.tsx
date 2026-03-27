@@ -24,6 +24,10 @@ const OAuthButton = ({
   </button>
 );
 
+/**
+ * Sign-up page for creating a new user account with credentials or OAuth.
+ * @returns The sign-up page JSX
+ */
 export default function SignUpPage() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -75,15 +79,10 @@ export default function SignUpPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div>
-          <h1 className="text-center text-3xl font-bold text-gray-900">
-            Create your account
-          </h1>
+          <h1 className="text-center text-3xl font-bold text-gray-900">Create your account</h1>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link
-              href="/auth/signin"
-              className="font-medium text-green-600 hover:text-green-500"
-            >
+            <Link href="/auth/signin" className="font-medium text-green-600 hover:text-green-500">
               sign in to an existing account
             </Link>
           </p>
@@ -107,11 +106,7 @@ export default function SignUpPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">{error}</div>}
 
           <div className="space-y-4 rounded-md shadow-sm">
             <div>

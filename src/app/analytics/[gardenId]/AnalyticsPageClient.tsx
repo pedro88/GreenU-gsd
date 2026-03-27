@@ -10,8 +10,11 @@ interface AnalyticsPageClientProps {
 }
 
 /**
- * Analytics page client component
- * Shows garden performance metrics with charts
+ * Client component that fetches and displays garden analytics with charts and performance data.
+ * @param root0 - Props object
+ * @param root0.gardenId - The ID of the garden to show analytics for
+ * @param root0.gardenName - The display name of the garden
+ * @returns The analytics dashboard JSX
  */
 export function AnalyticsPageClient({ gardenId, gardenName }: AnalyticsPageClientProps) {
   const { data, isLoading, isError } = useGetAnalyticsQuery(gardenId);

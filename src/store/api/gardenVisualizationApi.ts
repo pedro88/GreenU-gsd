@@ -51,9 +51,7 @@ export const gardenVisualizationApi = createApi({
     /** GET /api/gardens/[id]/visualization */
     getGardenVisualization: builder.query<GardenVisualization, string>({
       query: (gardenId) => `/gardens/${gardenId}/visualization`,
-      providesTags: (_result, _error, gardenId) => [
-        { type: 'GardenVisualization', id: gardenId },
-      ],
+      providesTags: (_result, _error, gardenId) => [{ type: 'GardenVisualization', id: gardenId }],
     }),
 
     /** POST /api/gardens/[id]/zones */
@@ -76,7 +74,7 @@ export const gardenVisualizationApi = createApi({
       { id: string; name: string },
       { zoneId: string; gardenId: string; name: string; sizeSqFt?: number; soilType?: string }
     >({
-      query: ({ zoneId, gardenId, ...body }) => ({
+      query: ({ zoneId, gardenId: _gardenId, ...body }) => ({
         url: `/zones/${zoneId}/plots`,
         method: 'POST',
         body,
@@ -89,9 +87,15 @@ export const gardenVisualizationApi = createApi({
     /** POST /api/plots/[id]/crops */
     createCrop: builder.mutation<
       { id: string; plantTypeId: string; plantedDate: string },
-      { plotId: string; gardenId: string; plantTypeId: string; plantedDate: string; quantity?: number }
+      {
+        plotId: string;
+        gardenId: string;
+        plantTypeId: string;
+        plantedDate: string;
+        quantity?: number;
+      }
     >({
-      query: ({ plotId, gardenId, ...body }) => ({
+      query: ({ plotId, gardenId: _gardenId, ...body }) => ({
         url: `/plots/${plotId}/crops`,
         method: 'POST',
         body,

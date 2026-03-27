@@ -6,12 +6,13 @@ import { canWriteGarden } from '@/lib/gardenAccess';
 
 /**
  * GET /api/clients/[id]/tasks
- * List all tasks for a client
+ * List all tasks for a client.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the client ID
+ * @returns Array of tasks for the client, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -49,17 +50,21 @@ const createTaskSchema = z.object({
   description: z.string().max(2000).optional(),
   gardenId: z.string().optional(),
   assigneeId: z.string().min(1),
-  dueDate: z.string().optional().transform((s) => (s ? new Date(s) : null)),
+  dueDate: z
+    .string()
+    .optional()
+    .transform((s) => (s ? new Date(s) : null)),
 });
 
 /**
  * POST /api/clients/[id]/tasks
- * Create a task for a client
+ * Create a task for a client.
+ * @param request - The incoming HTTP request with task data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the client ID
+ * @returns The created task, or an error response
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -80,10 +85,7 @@ export async function POST(
     const validation = createTaskSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { title, description, gardenId, assigneeId, dueDate } = validation.data;

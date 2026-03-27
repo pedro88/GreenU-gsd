@@ -11,7 +11,13 @@ interface AddZoneDialogProps {
 }
 
 /**
- * Dialog for creating a new zone
+ * Dialog component for creating a new garden zone.
+ * Displays a modal with form inputs for zone name and type selection.
+ * @param props - Dialog visibility, close handler, and submit handler
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Callback when dialog should close
+ * @param props.onSubmit - Callback with zone name and type when form is submitted
+ * @returns The rendered dialog element or null if not open
  */
 export function AddZoneDialog({ open, onClose, onSubmit }: AddZoneDialogProps) {
   const [name, setName] = useState('');
@@ -42,7 +48,10 @@ export function AddZoneDialog({ open, onClose, onSubmit }: AddZoneDialogProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -95,7 +104,14 @@ interface AddPlotDialogProps {
 }
 
 /**
- * Dialog for creating a new plot in a zone
+ * Dialog component for creating a new plot within a specific zone.
+ * Displays a modal with form inputs for plot name, size, and soil type.
+ * @param props - Dialog visibility, zone context, and submit handler
+ * @param props.open - Whether the dialog is visible
+ * @param props.zoneName - Name of the parent zone for display purposes
+ * @param props.onClose - Callback when dialog should close
+ * @param props.onSubmit - Callback with plot details when form is submitted
+ * @returns The rendered dialog element or null if not open
  */
 export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDialogProps) {
   const [name, setName] = useState('');
@@ -132,7 +148,10 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -150,7 +169,9 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Size (sq ft, optional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Size (sq ft, optional)
+            </label>
             <Input
               type="number"
               value={sizeSqFt}
@@ -161,7 +182,9 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Soil type (optional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Soil type (optional)
+            </label>
             <select
               value={soilType}
               onChange={(e) => setSoilType(e.target.value)}
@@ -201,9 +224,25 @@ interface AddCropDialogProps {
 }
 
 /**
- * Dialog for planting a crop in a plot
+ * Dialog component for planting a crop in a specific plot.
+ * Displays a modal with plant type selection, planting date, and quantity inputs.
+ * @param props - Dialog visibility, plot context, available plants, and submit handler
+ * @param props.open - Whether the dialog is visible
+ * @param props.plotName - Name of the parent plot for display purposes
+ * @param props.gardenId - ID of the garden containing the plot
+ * @param props.plants - List of available plant types to choose from
+ * @param props.onClose - Callback when dialog should close
+ * @param props.onSubmit - Callback with crop details when form is submitted
+ * @returns The rendered dialog element or null if not open
  */
-export function AddCropDialog({ open, plotName, gardenId, plants, onClose, onSubmit }: AddCropDialogProps) {
+export function AddCropDialog({
+  open,
+  plotName,
+  gardenId: _gardenId,
+  plants,
+  onClose,
+  onSubmit,
+}: AddCropDialogProps) {
   const [plantTypeId, setPlantTypeId] = useState('');
   const [plantedDate, setPlantedDate] = useState(new Date().toISOString().split('T')[0]);
   const [quantity, setQuantity] = useState('');
@@ -225,11 +264,7 @@ export function AddCropDialog({ open, plotName, gardenId, plants, onClose, onSub
     setLoading(true);
     setError('');
     try {
-      await onSubmit(
-        plantTypeId,
-        plantedDate,
-        quantity ? parseFloat(quantity) : undefined
-      );
+      await onSubmit(plantTypeId, plantedDate, quantity ? parseFloat(quantity) : undefined);
       setPlantTypeId('');
       setPlantedDate(new Date().toISOString().split('T')[0]);
       setQuantity('');
@@ -242,7 +277,10 @@ export function AddCropDialog({ open, plotName, gardenId, plants, onClose, onSub
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -275,7 +313,9 @@ export function AddCropDialog({ open, plotName, gardenId, plants, onClose, onSub
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity (optional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Quantity (optional)
+            </label>
             <Input
               type="number"
               value={quantity}

@@ -39,7 +39,11 @@ interface PublicGardenPageClientProps {
 }
 
 /**
- * Public garden page — read-only view, accessible without auth
+ * Client component for displaying a public garden in read-only mode.
+ * Allows authenticated users to follow the garden owner.
+ * @param root0 - Props object
+ * @param root0.gardenId - The ID of the public garden to display
+ * @returns The public garden page JSX
  */
 export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps) {
   const [garden, setGarden] = useState<PublicGarden | null>(null);
@@ -49,6 +53,9 @@ export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps
   const [togglingFollow, setTogglingFollow] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches the garden data from the API and checks follow status.
+     */
     async function fetchGarden() {
       try {
         const res = await fetch(`/api/gardens/${gardenId}`);
@@ -109,7 +116,10 @@ export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps
           {error === 'This garden is private' ? 'Private Garden' : 'Garden Not Found'}
         </h1>
         <p className="text-gray-500 mb-6">{error}</p>
-        <Link href="/discover" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors text-sm">
+        <Link
+          href="/discover"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors text-sm"
+        >
           Browse discover
         </Link>
       </div>
@@ -137,12 +147,13 @@ export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps
     TERRACE: 'border-teal-300 bg-teal-50',
   };
 
-  const ownerInitials = garden.owner.name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) || '?';
+  const ownerInitials =
+    garden.owner.name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || '?';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -160,9 +171,7 @@ export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps
               <div className="h-5 w-px bg-gray-200" />
               <div>
                 <h1 className="font-semibold text-gray-900">{garden.name}</h1>
-                {garden.location && (
-                  <p className="text-xs text-gray-400">{garden.location}</p>
-                )}
+                {garden.location && <p className="text-xs text-gray-400">{garden.location}</p>}
               </div>
             </div>
 
@@ -185,9 +194,10 @@ export function PublicGardenPageClient({ gardenId }: PublicGardenPageClientProps
                 onClick={handleFollow}
                 disabled={togglingFollow}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors
-                  ${following
-                    ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    : 'bg-green-600 text-white hover:bg-green-500'
+                  ${
+                    following
+                      ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-green-600 text-white hover:bg-green-500'
                   } disabled:opacity-50`}
               >
                 {togglingFollow ? '...' : following ? 'Following' : '+ Follow'}

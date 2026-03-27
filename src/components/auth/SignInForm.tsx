@@ -10,6 +10,11 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SignInFormData, signInSchema } from '@/lib/validations/auth';
 
+/**
+ * Sign-in form component with email/password fields and OAuth link.
+ * Uses react-hook-form with Zod validation and calls NextAuth signIn.
+ * @returns The sign-in form JSX
+ */
 export function SignInForm() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
@@ -51,16 +56,12 @@ export function SignInForm() {
     <div className="w-full max-w-md space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Sign in to access your gardens
-        </p>
+        <p className="mt-2 text-sm text-gray-600">Sign in to access your gardens</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-            {serverError}
-          </div>
+          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{serverError}</div>
         )}
 
         <Input
@@ -79,8 +80,6 @@ export function SignInForm() {
           {...register('password')}
         />
 
-
-
         <Button type="submit" className="w-full" loading={loading}>
           Sign in
         </Button>
@@ -88,10 +87,7 @@ export function SignInForm() {
 
       <p className="text-center text-sm text-gray-600">
         Don&apos;t have an account?{' '}
-        <Link
-          href="/auth/signup"
-          className="font-medium text-green-600 hover:text-green-500"
-        >
+        <Link href="/auth/signup" className="font-medium text-green-600 hover:text-green-500">
           Create one
         </Link>
       </p>

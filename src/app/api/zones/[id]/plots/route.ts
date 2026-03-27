@@ -5,16 +5,20 @@ import { z } from 'zod';
 
 /**
  * POST /api/zones/[id]/plots
- * Create a new plot in a zone
+ * Create a new plot in a zone.
+ * @param request - The incoming HTTP request with plot data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with zone ID
+ * @returns The created plot record with crops, or an error response
  */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id: zoneId } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -32,18 +36,17 @@ export async function POST(
     }
 
     const body = await request.json();
-    const validation = z.object({
-      name: z.string().min(1, 'Name is required').max(100),
-      sizeSqFt: z.number().positive().optional(),
-      soilType: z.string().max(50).optional(),
-      notes: z.string().max(500).optional(),
-    }).safeParse(body);
+    const validation = z
+      .object({
+        name: z.string().min(1, 'Name is required').max(100),
+        sizeSqFt: z.number().positive().optional(),
+        soilType: z.string().max(50).optional(),
+        notes: z.string().max(500).optional(),
+      })
+      .safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { name, sizeSqFt, soilType, notes } = validation.data;

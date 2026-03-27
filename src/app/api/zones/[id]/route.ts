@@ -5,16 +5,17 @@ import { z } from 'zod';
 
 /**
  * GET /api/zones/[id]
- * Get a specific zone with plots
+ * Get a specific zone with plots.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the zone ID
+ * @returns The zone with plots, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -58,16 +59,17 @@ const updateZoneSchema = z.object({
 
 /**
  * PATCH /api/zones/[id]
- * Update a zone
+ * Update a zone's name or type.
+ * @param request - The incoming HTTP request with update data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the zone ID
+ * @returns The updated zone, or an error response
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -85,10 +87,7 @@ export async function PATCH(
     const validation = updateZoneSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const zone = await prisma.zone.update({
@@ -108,7 +107,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/zones/[id]
- * Delete a zone and all its plots
+ * Delete a zone and all its plots.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the zone ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,
@@ -117,7 +120,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

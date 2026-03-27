@@ -15,7 +15,10 @@ interface MonthlyActivityChartProps {
 }
 
 /**
- * Line chart showing monthly harvest activity over the past year
+ * Line chart showing monthly harvest activity over the past year.
+ * @param root0 - Props object
+ * @param root0.data - Array of monthly data with month, label, and harvest count
+ * @returns The line chart JSX
  */
 export function MonthlyActivityChart({ data }: MonthlyActivityChartProps) {
   if (data.every((d) => d.harvests === 0)) {
@@ -30,11 +33,7 @@ export function MonthlyActivityChart({ data }: MonthlyActivityChartProps) {
     <ResponsiveContainer width="100%" height={200}>
       <LineChart data={data} margin={{ left: 16, right: 16 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-        <XAxis
-          dataKey="label"
-          tick={{ fontSize: 10, fill: '#6b7280' }}
-          interval={1}
-        />
+        <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#6b7280' }} interval={1} />
         <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} allowDecimals={false} />
         <Tooltip
           contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}

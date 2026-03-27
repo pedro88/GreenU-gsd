@@ -4,16 +4,20 @@ import { prisma } from '@/lib/db';
 
 /**
  * GET /api/plots/[id]/companions
- * Get companion planting suggestions based on current crops in plot
+ * Get companion planting suggestions based on current crops in plot.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with plot ID
+ * @returns Current crops with companion and incompatible plant suggestions, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -81,7 +85,7 @@ export async function GET(
     // Remove current plants from suggestions
     companions.delete('');
     incompatibles.delete('');
-    currentPlants.forEach(p => {
+    currentPlants.forEach((p) => {
       companions.delete(p);
       companions.delete(p.toLowerCase());
       companions.delete(p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
@@ -105,7 +109,7 @@ export async function GET(
     });
 
     return NextResponse.json({
-      currentCrops: plot.crops.map(c => ({
+      currentCrops: plot.crops.map((c) => ({
         id: c.id,
         plantType: c.plantType.name,
         family: c.plantType.family.name,
@@ -113,13 +117,13 @@ export async function GET(
         plantedDate: c.plantedDate,
       })),
       suggestions: {
-        companions: suggestedCompanions.map(p => ({
+        companions: suggestedCompanions.map((p) => ({
           id: p.id,
           name: p.name,
           family: p.family.name,
           daysToMaturity: p.daysToMaturity,
         })),
-        incompatibles: suggestedIncompatibles.map(p => ({
+        incompatibles: suggestedIncompatibles.map((p) => ({
           id: p.id,
           name: p.name,
           family: p.family.name,

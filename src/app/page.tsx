@@ -3,6 +3,11 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
+/**
+ * Landing page for greenU. Shows sign-in/sign-up for unauthenticated users,
+ * or a welcome screen with quick links for authenticated users.
+ * @returns The home page JSX
+ */
 export default function HomePage() {
   const { data: session } = useSession();
 

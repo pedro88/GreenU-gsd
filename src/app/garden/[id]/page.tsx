@@ -5,11 +5,13 @@ import { getGardenPermission } from '@/lib/gardenAccess';
 import { GardenPageClient } from './GardenPageClient';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
-export default async function GardenPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+/**
+ * Server component that renders the garden page with authentication and permission checks.
+ * @param root0 - Props object
+ * @param root0.params - Route parameters containing the garden ID
+ * @returns The protected garden page with client component
+ */
+export default async function GardenPage({ params }: { params: Promise<{ id: string }> }) {
   return (
     <ProtectedRoute>
       <GardenPageInner params={params} />
@@ -17,11 +19,14 @@ export default async function GardenPage({
   );
 }
 
-async function GardenPageInner({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+/**
+ * Inner server component that fetches garden metadata and plant types,
+ * then renders the client garden page component.
+ * @param root0 - Props object
+ * @param root0.params - Route parameters containing the garden ID
+ * @returns The garden page client component JSX
+ */
+async function GardenPageInner({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   const { id } = await params;
 

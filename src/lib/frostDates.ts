@@ -6,7 +6,7 @@
 
 export interface FrostDates {
   lastSpringFrost: string; // MM-DD format
-  firstFallFrost: string;  // MM-MM format
+  firstFallFrost: string; // MM-MM format
 }
 
 export interface ClimateZone {
@@ -67,13 +67,13 @@ export const climateZones: Record<string, ClimateZone> = {
     lastSpringFrost: '03-15',
     firstFallFrost: '11-15',
   },
-  'es': {
+  es: {
     zone: 'es',
     label: 'Spain',
     lastSpringFrost: '03-01',
     firstFallFrost: '11-30',
   },
-  'de': {
+  de: {
     zone: 'de',
     label: 'Germany / Central Europe',
     lastSpringFrost: '05-01',
@@ -90,12 +90,13 @@ export const climateZones: Record<string, ClimateZone> = {
 };
 
 /**
- * Infer climate zone from user language and approximate latitude
+ * Infers the climate zone based on user language and approximate latitude.
+ * Used to provide frost date estimates for planting recommendations.
+ * @param language - The user's preferred language code (e.g., 'en', 'fr', 'es')
+ * @param latitude - The user's approximate latitude in degrees (-90 to 90), or null
+ * @returns The inferred ClimateZone with frost date estimates
  */
-export function inferClimateZone(
-  language: string,
-  latitude: number | null
-): ClimateZone {
+export function inferClimateZone(language: string, latitude: number | null): ClimateZone {
   if (latitude !== null) {
     // Northern hemisphere
     if (latitude >= 35 && latitude <= 50) {

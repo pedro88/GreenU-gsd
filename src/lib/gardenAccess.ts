@@ -3,8 +3,11 @@ import { prisma } from '@/lib/db';
 export type GardenPermission = 'owner' | 'editor' | 'viewer' | 'none';
 
 /**
- * Check what permission a user has on a garden.
- * Returns: 'owner' | 'editor' | 'viewer' | 'none'
+ * Checks the permission level a user has on a specific garden.
+ * Queries the database to determine if the user is the owner, has an access record, or has no access.
+ * @param userId - The ID of the user to check permissions for (null/undefined for unauthenticated)
+ * @param gardenId - The ID of the garden to check access for
+ * @returns The user's permission level: 'owner', 'editor', 'viewer', or 'none'
  */
 export async function getGardenPermission(
   userId: string | null | undefined,
@@ -32,7 +35,11 @@ export async function getGardenPermission(
 }
 
 /**
- * Check if user can read a garden (owner, editor, or viewer)
+ * Checks whether a user has at least read-only access to a garden.
+ * Returns true if the user is an owner, editor, or viewer of the garden.
+ * @param userId - The ID of the user to check permissions for (null/undefined for unauthenticated)
+ * @param gardenId - The ID of the garden to check access for
+ * @returns True if the user can read the garden, false otherwise
  */
 export async function canReadGarden(
   userId: string | null | undefined,
@@ -43,7 +50,11 @@ export async function canReadGarden(
 }
 
 /**
- * Check if user can write to a garden (owner or editor only)
+ * Checks whether a user has write access to a garden.
+ * Returns true only if the user is an owner or editor (not viewer).
+ * @param userId - The ID of the user to check permissions for (null/undefined for unauthenticated)
+ * @param gardenId - The ID of the garden to check access for
+ * @returns True if the user can write to the garden, false otherwise
  */
 export async function canWriteGarden(
   userId: string | null | undefined,
@@ -54,7 +65,10 @@ export async function canWriteGarden(
 }
 
 /**
- * Check if user is garden owner
+ * Checks whether a user is the owner of a specific garden.
+ * @param userId - The ID of the user to check (null/undefined for unauthenticated)
+ * @param gardenId - The ID of the garden to check ownership for
+ * @returns True if the user is the garden owner, false otherwise
  */
 export async function isGardenOwner(
   userId: string | null | undefined,

@@ -15,7 +15,12 @@ export const store = configureStore({
     [analyticsApi.reducerPath]: analyticsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, gardenVisualizationApi.middleware, calendarApi.middleware, analyticsApi.middleware),
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      gardenVisualizationApi.middleware,
+      calendarApi.middleware,
+      analyticsApi.middleware
+    ),
 });
 
 setupListeners(store.dispatch);

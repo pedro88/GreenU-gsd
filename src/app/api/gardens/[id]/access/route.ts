@@ -4,13 +4,17 @@ import { prisma } from '@/lib/db';
 
 /**
  * GET /api/gardens/[id]/access
- * List all collaborators (GardenAccess records) for a garden
- * Accessible by owner and editors
+ * List all collaborators (GardenAccess records) for a garden.
+ * Accessible by owner and editors.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with garden ID
+ * @returns Array of collaborators with user info, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const session = await auth();
@@ -23,10 +27,7 @@ export async function GET(
     const garden = await prisma.garden.findFirst({
       where: {
         id,
-        OR: [
-          { userId: session.user.id },
-          { collaborators: { some: { userId: session.user.id } } },
-        ],
+        OR: [{ userId: session.user.id }, { collaborators: { some: { userId: session.user.id } } }],
       },
     });
 

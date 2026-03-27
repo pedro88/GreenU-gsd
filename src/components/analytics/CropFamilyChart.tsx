@@ -1,20 +1,16 @@
 'use client';
 
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 interface CropFamilyChartProps {
   data: { name: string; count: number }[];
 }
 
 /**
- * Pie chart showing distribution of crops by plant family
+ * Pie chart showing the distribution of planted crops by plant family.
+ * @param root0 - Props object
+ * @param root0.data - Array of crop family names with their count
+ * @returns The pie chart JSX
  */
 export function CropFamilyChart({ data }: CropFamilyChartProps) {
   const COLORS = [

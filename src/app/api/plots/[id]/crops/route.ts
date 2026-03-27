@@ -6,16 +6,20 @@ import { canWriteGarden } from '@/lib/gardenAccess';
 
 /**
  * POST /api/plots/[plotId]/crops
- * Plant a new crop in a plot
+ * Plant a new crop in a plot.
+ * @param request - The incoming HTTP request with crop data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with plot ID
+ * @returns The created crop record with plant type info and events, or an error response
  */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ plotId: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { plotId } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -23,7 +27,10 @@ export async function POST(
     // Get plot with garden ID
     const plot = await prisma.plot.findFirst({
       where: { id: plotId },
-      include: { zone: { select: { gardenId: true } }, rotationLog: { orderBy: { year: 'desc' }, take: 1, include: { family: true } } },
+      include: {
+        zone: { select: { gardenId: true } },
+        rotationLog: { orderBy: { year: 'desc' }, take: 1, include: { family: true } },
+      },
     });
 
     if (!plot) {
@@ -33,22 +40,24 @@ export async function POST(
     // Owner or editor can plant crops
     const canWrite = await canWriteGarden(session.user.id, plot.zone.gardenId);
     if (!canWrite) {
-      return NextResponse.json({ error: 'Not authorized to add crops to this garden' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Not authorized to add crops to this garden' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
-    const validation = z.object({
-      plantTypeId: z.string().min(1, 'Plant type is required'),
-      plantedDate: z.string().transform((s) => new Date(s + 'T12:00:00')),
-      quantity: z.number().positive().optional(),
-      notes: z.string().max(500).optional(),
-    }).safeParse(body);
+    const validation = z
+      .object({
+        plantTypeId: z.string().min(1, 'Plant type is required'),
+        plantedDate: z.string().transform((s) => new Date(s + 'T12:00:00')),
+        quantity: z.number().positive().optional(),
+        notes: z.string().max(500).optional(),
+      })
+      .safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { plantTypeId, plantedDate, quantity, notes } = validation.data;

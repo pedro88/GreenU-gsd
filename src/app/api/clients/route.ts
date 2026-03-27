@@ -5,7 +5,8 @@ import { z } from 'zod';
 
 /**
  * GET /api/clients
- * List all clients for the authenticated pro user
+ * List all clients for the authenticated pro user.
+ * @returns Array of clients with task counts and pending tasks, or an error response
  */
 export async function GET() {
   try {
@@ -43,7 +44,9 @@ const createClientSchema = z.object({
 
 /**
  * POST /api/clients
- * Create a new client
+ * Create a new client.
+ * @param request - The incoming HTTP request with client data
+ * @returns The created client record, or an error response
  */
 export async function POST(request: NextRequest) {
   try {
@@ -56,10 +59,7 @@ export async function POST(request: NextRequest) {
     const validation = createClientSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { name, email, phone, notes } = validation.data;

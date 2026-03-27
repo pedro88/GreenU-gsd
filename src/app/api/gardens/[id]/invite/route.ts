@@ -6,12 +6,13 @@ import { randomBytes } from 'crypto';
 
 /**
  * GET /api/gardens/[id]/invite
- * List all pending invites for a garden (owner only)
+ * List all pending invites for a garden (owner only).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID
+ * @returns Array of pending invites for the garden, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -51,13 +52,14 @@ const inviteSchema = z.object({
 
 /**
  * POST /api/gardens/[id]/invite
- * Create an invite for a garden (owner only)
- * If user with email already exists, optionally auto-add as collaborator
+ * Create an invite for a garden (owner only).
+ * If user with email already exists, optionally auto-add as collaborator.
+ * @param request - The incoming HTTP request with invite data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID
+ * @returns The created invite, or an error response
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -80,10 +82,7 @@ export async function POST(
     const validation = inviteSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { email, role } = validation.data;
@@ -100,7 +99,10 @@ export async function POST(
         where: { userId_gardenId: { userId: existingUser.id, gardenId: id } },
       });
       if (existingAccess) {
-        return NextResponse.json({ error: 'User already has access to this garden' }, { status: 409 });
+        return NextResponse.json(
+          { error: 'User already has access to this garden' },
+          { status: 409 }
+        );
       }
     }
 

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { z } from 'zod';
 
 /**
  * GET /api/invites/[token]
- * Get invite details (public — no auth needed to view invite before accepting)
+ * Get invite details (public — no auth needed to view invite before accepting).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the invite token
+ * @returns The invite details, or an error response if not found or expired
  */
 export async function GET(
   request: NextRequest,
@@ -17,7 +20,9 @@ export async function GET(
     const invite = await prisma.gardenInvite.findUnique({
       where: { token },
       include: {
-        garden: { select: { id: true, name: true, description: true, user: { select: { name: true } } } },
+        garden: {
+          select: { id: true, name: true, description: true, user: { select: { name: true } } },
+        },
         inviter: { select: { name: true, email: true } },
       },
     });
@@ -48,7 +53,11 @@ export async function GET(
 
 /**
  * POST /api/invites/[token]
- * Accept an invite (requires auth — must be the invited email)
+ * Accept an invite (requires auth — must be the invited email).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the invite token
+ * @returns The access record, or an error response
  */
 export async function POST(
   request: NextRequest,
@@ -91,7 +100,10 @@ export async function POST(
     if (existing) {
       // Already has access — delete the invite and return success
       await prisma.gardenInvite.delete({ where: { token } });
-      return NextResponse.json({ message: 'You already have access to this garden', gardenId: invite.gardenId });
+      return NextResponse.json({
+        message: 'You already have access to this garden',
+        gardenId: invite.gardenId,
+      });
     }
 
     // Create access record
@@ -106,10 +118,13 @@ export async function POST(
     // Delete the invite after acceptance
     await prisma.gardenInvite.delete({ where: { token } });
 
-    return NextResponse.json({
-      message: 'Invite accepted',
-      access: { ...access, gardenId: invite.gardenId, gardenName: invite.garden.name },
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'Invite accepted',
+        access: { ...access, gardenId: invite.gardenId, gardenName: invite.garden.name },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Failed to accept invite:', error);
     return NextResponse.json({ error: 'Failed to accept invite' }, { status: 500 });
@@ -118,7 +133,11 @@ export async function POST(
 
 /**
  * DELETE /api/invites/[token]
- * Cancel an invite (owner only — or inviter)
+ * Cancel an invite (owner only — or inviter).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the invite token
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,

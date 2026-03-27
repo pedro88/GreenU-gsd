@@ -6,16 +6,17 @@ import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 
 /**
  * GET /api/crops/[id]
- * Get a specific crop with events
+ * Get a specific crop with events.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the crop ID
+ * @returns The crop with plant type and events, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -67,24 +68,41 @@ export async function GET(
 }
 
 const updateCropSchema = z.object({
-  status: z.enum(['PLANTED', 'SEEDLING', 'VEGETATIVE', 'FLOWERING', 'FRUITING', 'HARVESTING', 'HARVESTED', 'FAILED']).optional(),
-  harvestedDate: z.string().datetime().or(z.date()).nullable().transform(d => d ? new Date(d) : null),
+  status: z
+    .enum([
+      'PLANTED',
+      'SEEDLING',
+      'VEGETATIVE',
+      'FLOWERING',
+      'FRUITING',
+      'HARVESTING',
+      'HARVESTED',
+      'FAILED',
+    ])
+    .optional(),
+  harvestedDate: z
+    .string()
+    .datetime()
+    .or(z.date())
+    .nullable()
+    .transform((d) => (d ? new Date(d) : null)),
   quantity: z.number().positive().nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
 });
 
 /**
  * PATCH /api/crops/[id]
- * Update a crop (status, harvest, etc.) — owner or editor
+ * Update a crop (status, harvest, etc.) — owner or editor only.
+ * @param request - The incoming HTTP request with update data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the crop ID
+ * @returns The updated crop, or an error response
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -111,10 +129,7 @@ export async function PATCH(
     const validation = updateCropSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { status, harvestedDate, quantity, notes } = validation.data;
@@ -155,7 +170,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/crops/[id]
- * Remove a crop from a plot (owner or editor)
+ * Remove a crop from a plot (owner or editor only).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the crop ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,
@@ -164,7 +183,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

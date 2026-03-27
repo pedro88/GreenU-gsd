@@ -5,12 +5,16 @@ import { canReadGarden } from '@/lib/gardenAccess';
 
 /**
  * GET /api/analytics/[gardenId]
- * Returns aggregated analytics data for a garden (any garden reader)
+ * Returns aggregated analytics data for a garden including totals, crop yields, family breakdown, monthly activity, and zone stats.
+ * @param request - The incoming Next.js request object (unused but required by Next.js routing)
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Promise resolving to route params containing gardenId
+ * @returns JSON response with analytics data, or an error response if unauthorized or garden not found
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ gardenId: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { gardenId } = await params;
     const session = await auth();
@@ -53,9 +57,7 @@ export async function GET(
     const totalPlanted = allCrops.length;
     const totalHarvested = allCrops.filter((c) => c.status === 'HARVESTED').length;
     const totalFailed = allCrops.filter((c) => c.status === 'FAILED').length;
-    const successRate = totalPlanted > 0
-      ? Math.round((totalHarvested / totalPlanted) * 100)
-      : 0;
+    const successRate = totalPlanted > 0 ? Math.round((totalHarvested / totalPlanted) * 100) : 0;
 
     // Yields per crop type
     const yieldByPlant: Record<string, { name: string; totalYield: number; count: number }> = {};
@@ -65,7 +67,8 @@ export async function GET(
         yieldByPlant[name] = { name, totalYield: 0, count: 0 };
       }
       yieldByPlant[name].count += 1;
-      yieldByPlant[name].totalYield += crop.events.find((e) => e.eventType === 'HARVEST')?.quantity ?? 0;
+      yieldByPlant[name].totalYield +=
+        crop.events.find((e) => e.eventType === 'HARVEST')?.quantity ?? 0;
     }
 
     const topCrops = Object.values(yieldByPlant)

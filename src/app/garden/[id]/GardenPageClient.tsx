@@ -21,8 +21,16 @@ interface GardenPageClientProps {
 }
 
 /**
- * Main garden visualization page client component
- * Manages dialogs, settings, and data fetching for garden canvas
+ * Main client component for the garden visualization page.
+ * Manages garden canvas rendering, CRUD dialogs (zones, plots, crops), and garden settings.
+ * Handles collaborator management for garden owners and public visibility toggling.
+ * @param props - Garden page initialization data
+ * @param props.gardenId - ID of the garden to display
+ * @param props.gardenName - Display name of the garden
+ * @param props.isPublic - Whether the garden is publicly visible
+ * @param props.role - Current user's permission role (owner, editor, or viewer)
+ * @param props.plants - Available plant types for the crop planting dialog
+ * @returns The full garden page with canvas, header, settings panel, and dialogs
  */
 export function GardenPageClient({
   gardenId,
@@ -32,8 +40,12 @@ export function GardenPageClient({
   plants,
 }: GardenPageClientProps) {
   const [showAddZone, setShowAddZone] = useState(false);
-  const [addPlotTarget, setAddPlotTarget] = useState<{ zoneId: string; zoneName: string } | null>(null);
-  const [addCropTarget, setAddCropTarget] = useState<{ plotId: string; plotName: string } | null>(null);
+  const [addPlotTarget, setAddPlotTarget] = useState<{ zoneId: string; zoneName: string } | null>(
+    null
+  );
+  const [addCropTarget, setAddCropTarget] = useState<{ plotId: string; plotName: string } | null>(
+    null
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [isPublic, setIsPublic] = useState(initialPublic);
   const [togglingPublic, setTogglingPublic] = useState(false);
@@ -42,8 +54,12 @@ export function GardenPageClient({
   const [sendingInvite, setSendingInvite] = useState(false);
   const [inviteSuccess, setInviteSuccess] = useState('');
   const [inviteError, setInviteError] = useState('');
-  const [collaborators, setCollaborators] = useState<Array<{ id: string; user: { id: string; name: string | null; email: string }; role: string }>>([]);
-  const [pendingInvites, setPendingInvites] = useState<Array<{ id: string; email: string; role: string; expiresAt: string }>>([]);
+  const [collaborators, setCollaborators] = useState<
+    Array<{ id: string; user: { id: string; name: string | null; email: string }; role: string }>
+  >([]);
+  const [pendingInvites, setPendingInvites] = useState<
+    Array<{ id: string; email: string; role: string; expiresAt: string }>
+  >([]);
   const [changingRole, setChangingRole] = useState<string | null>(null);
   const [removingCollaborator, setRemovingCollaborator] = useState<string | null>(null);
 
@@ -111,6 +127,11 @@ export function GardenPageClient({
   // Fetch collaborators and invites when settings panel opens (owner only)
   useEffect(() => {
     if (!showSettings || !isOwner) return;
+
+    /**
+     * Fetches the list of collaborators and pending invites for the garden from the API.
+     * Populates the collaborators and pendingInvites state variables on success.
+     */
     async function fetchCollaborators() {
       try {
         const [accessRes, inviteRes] = await Promise.all([
@@ -125,7 +146,7 @@ export function GardenPageClient({
           const data = await inviteRes.json();
           setPendingInvites(data);
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
@@ -198,9 +219,10 @@ export function GardenPageClient({
     }
   };
 
-  const publicUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/gardens/${gardenId}`
-    : `/gardens/${gardenId}`;
+  const publicUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/gardens/${gardenId}`
+      : `/gardens/${gardenId}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -295,7 +317,10 @@ export function GardenPageClient({
 
       {/* Settings panel */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+        <div
+          className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+          onClick={() => setShowSettings(false)}
+        >
           <div
             className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
@@ -368,11 +393,15 @@ export function GardenPageClient({
                   <div className="mb-3 space-y-2">
                     <div className="text-xs text-gray-500 font-medium">Pending invites</div>
                     {pendingInvites.map((invite) => (
-                      <div key={invite.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+                      <div
+                        key={invite.id}
+                        className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                      >
                         <div>
                           <div className="text-xs font-medium text-gray-700">{invite.email}</div>
                           <div className="text-xs text-gray-400">
-                            {invite.role} · expires {new Date(invite.expiresAt).toLocaleDateString()}
+                            {invite.role} · expires{' '}
+                            {new Date(invite.expiresAt).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
@@ -387,7 +416,8 @@ export function GardenPageClient({
                       <div key={collab.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
-                            {collab.user.name?.[0]?.toUpperCase() ?? collab.user.email[0].toUpperCase()}
+                            {collab.user.name?.[0]?.toUpperCase() ??
+                              collab.user.email[0].toUpperCase()}
                           </div>
                           <div>
                             <div className="text-xs font-medium text-gray-700">
@@ -399,7 +429,12 @@ export function GardenPageClient({
                         <div className="flex items-center gap-2">
                           <select
                             value={collab.role}
-                            onChange={(e) => handleChangeRole(collab.user.id, e.target.value as 'EDITOR' | 'VIEWER')}
+                            onChange={(e) =>
+                              handleChangeRole(
+                                collab.user.id,
+                                e.target.value as 'EDITOR' | 'VIEWER'
+                              )
+                            }
                             disabled={changingRole === collab.user.id}
                             className="text-xs border border-gray-200 rounded px-2 py-1 text-gray-600 bg-white"
                           >
@@ -447,9 +482,7 @@ export function GardenPageClient({
                 {inviteSuccess && (
                   <div className="mt-2 text-xs text-green-600">{inviteSuccess}</div>
                 )}
-                {inviteError && (
-                  <div className="mt-2 text-xs text-red-500">{inviteError}</div>
-                )}
+                {inviteError && <div className="mt-2 text-xs text-red-500">{inviteError}</div>}
               </div>
             )}
 
@@ -466,7 +499,8 @@ export function GardenPageClient({
                 )}
                 {role === 'editor' && (
                   <div className="text-xs text-gray-400 mt-1">
-                    Editors can add zones, plots, and crops. Only the owner can manage collaborators or delete the garden.
+                    Editors can add zones, plots, and crops. Only the owner can manage collaborators
+                    or delete the garden.
                   </div>
                 )}
               </div>

@@ -23,30 +23,80 @@ export interface CalendarTask {
 export const plantingCalendarRules: Record<string, CalendarTask[]> = {
   // Solanaceae
   Tomato: [
-    { type: 'sow_indoors', weeksFromLastFrost: -6, labelKey: 'calendar.sowTomatoIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: 2, labelKey: 'calendar.transplantTomato', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -6,
+      labelKey: 'calendar.sowTomatoIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: 2,
+      labelKey: 'calendar.transplantTomato',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 12, labelKey: 'calendar.harvestTomato', icon: '🍅' },
   ],
   Pepper: [
-    { type: 'sow_indoors', weeksFromLastFrost: -8, labelKey: 'calendar.sowPepperIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: 2, labelKey: 'calendar.transplantPepper', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -8,
+      labelKey: 'calendar.sowPepperIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: 2,
+      labelKey: 'calendar.transplantPepper',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 14, labelKey: 'calendar.harvestPepper', icon: '🫑' },
   ],
   Eggplant: [
-    { type: 'sow_indoors', weeksFromLastFrost: -6, labelKey: 'calendar.sowEggplantIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: 2, labelKey: 'calendar.transplantEggplant', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -6,
+      labelKey: 'calendar.sowEggplantIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: 2,
+      labelKey: 'calendar.transplantEggplant',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 12, labelKey: 'calendar.harvestEggplant', icon: '🍆' },
   ],
 
   // Brassicaceae (Cucumbers)
   Broccoli: [
-    { type: 'sow_indoors', weeksFromLastFrost: -4, labelKey: 'calendar.sowBroccoliIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: -2, labelKey: 'calendar.transplantBroccoli', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -4,
+      labelKey: 'calendar.sowBroccoliIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: -2,
+      labelKey: 'calendar.transplantBroccoli',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 8, labelKey: 'calendar.harvestBroccoli', icon: '🥦' },
   ],
   Cabbage: [
-    { type: 'sow_indoors', weeksFromLastFrost: -4, labelKey: 'calendar.sowCabbageIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: -2, labelKey: 'calendar.transplantCabbage', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -4,
+      labelKey: 'calendar.sowCabbageIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: -2,
+      labelKey: 'calendar.transplantCabbage',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 10, labelKey: 'calendar.harvestCabbage', icon: '🥬' },
   ],
   Kale: [
@@ -56,8 +106,18 @@ export const plantingCalendarRules: Record<string, CalendarTask[]> = {
 
   // Cucurbitaceae
   Cucumber: [
-    { type: 'sow_indoors', weeksFromLastFrost: -3, labelKey: 'calendar.sowCucumberIndoors', icon: '🌱' },
-    { type: 'transplant', weeksFromLastFrost: 2, labelKey: 'calendar.transplantCucumber', icon: '🪴' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -3,
+      labelKey: 'calendar.sowCucumberIndoors',
+      icon: '🌱',
+    },
+    {
+      type: 'transplant',
+      weeksFromLastFrost: 2,
+      labelKey: 'calendar.transplantCucumber',
+      icon: '🪴',
+    },
     { type: 'harvest', weeksFromLastFrost: 10, labelKey: 'calendar.harvestCucumber', icon: '🥒' },
   ],
   Zucchini: [
@@ -115,7 +175,12 @@ export const plantingCalendarRules: Record<string, CalendarTask[]> = {
 
   // Herbs
   Basil: [
-    { type: 'sow_indoors', weeksFromLastFrost: -4, labelKey: 'calendar.sowBasilIndoors', icon: '🌱' },
+    {
+      type: 'sow_indoors',
+      weeksFromLastFrost: -4,
+      labelKey: 'calendar.sowBasilIndoors',
+      icon: '🌱',
+    },
     { type: 'transplant', weeksFromLastFrost: 2, labelKey: 'calendar.transplantBasil', icon: '🪴' },
     { type: 'harvest', weeksFromLastFrost: 10, labelKey: 'calendar.harvestBasil', icon: '🌿' },
   ],

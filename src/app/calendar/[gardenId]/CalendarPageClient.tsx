@@ -11,8 +11,12 @@ interface CalendarPageClientProps {
 }
 
 /**
- * Calendar page client component
- * Shows monthly calendar and task list based on user's location
+ * Client component displaying the garden calendar with monthly view and task list.
+ * Shows planting and harvesting tasks based on frost dates and climate zone.
+ * @param root0 - Props object
+ * @param root0.gardenId - The ID of the garden to display
+ * @param root0.gardenName - The display name of the garden
+ * @returns The calendar page JSX
  */
 export function CalendarPageClient({ gardenId, gardenName }: CalendarPageClientProps) {
   const { data, isLoading, isError } = useGetCalendarQuery(gardenId);

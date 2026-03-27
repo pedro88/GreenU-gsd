@@ -24,6 +24,10 @@ const OAuthButton = ({
   </button>
 );
 
+/**
+ * Sign-in page for authenticating users with credentials or OAuth providers.
+ * @returns The sign-in page JSX
+ */
 export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -64,15 +68,10 @@ export default function SignInPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div>
-          <h1 className="text-center text-3xl font-bold text-gray-900">
-            Sign in to greenU
-          </h1>
+          <h1 className="text-center text-3xl font-bold text-gray-900">Sign in to greenU</h1>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link
-              href="/auth/signup"
-              className="font-medium text-green-600 hover:text-green-500"
-            >
+            <Link href="/auth/signup" className="font-medium text-green-600 hover:text-green-500">
               create a new account
             </Link>
           </p>
@@ -96,11 +95,7 @@ export default function SignInPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">{error}</div>}
 
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
@@ -146,9 +141,7 @@ export default function SignInPage() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
 
-          <div className="text-center text-sm text-gray-500">
-            Password minimum 8 characters
-          </div>
+          <div className="text-center text-sm text-gray-500">Password minimum 8 characters</div>
         </form>
       </div>
     </div>

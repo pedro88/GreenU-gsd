@@ -11,9 +11,21 @@ interface CalendarViewProps {
 }
 
 /**
- * Monthly calendar view showing garden tasks
+ * Monthly calendar view that displays garden tasks organized by date.
+ * Includes frost date markers and navigation controls.
+ * @param root0 - Props object
+ * @param root0.tasks - Array of calendar tasks to display
+ * @param root0.lastSpringFrost - Date string of the last spring frost (MM-DD)
+ * @param root0.firstFallFrost - Date string of the first fall frost (MM-DD)
+ * @param root0.climateZone - The climate zone identifier and label
+ * @returns The rendered calendar view JSX
  */
-export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZone }: CalendarViewProps) {
+export function CalendarView({
+  tasks,
+  lastSpringFrost,
+  firstFallFrost,
+  climateZone,
+}: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const year = currentDate.getFullYear();
@@ -26,8 +38,18 @@ export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZo
 
   // Month name
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   // Group tasks by date string
@@ -41,7 +63,7 @@ export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZo
   }, [tasks]);
 
   // Special dates
-  const frostDates = {
+  const _frostDates = {
     spring: lastSpringFrost,
     fall: firstFallFrost,
   };
@@ -64,7 +86,7 @@ export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZo
   };
 
   const today = new Date().toISOString().split('T')[0];
-  const currentMonthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+  const _currentMonthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
 
   return (
     <div className="space-y-4">
@@ -139,18 +161,26 @@ export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZo
                 key={dateStr}
                 className={`min-h-[72px] border-t border-gray-100 p-1 ${isToday ? 'bg-green-50' : ''}`}
               >
-                <div className={`text-xs font-medium mb-0.5 ${isToday ? 'text-green-700' : 'text-gray-600'}`}>
+                <div
+                  className={`text-xs font-medium mb-0.5 ${isToday ? 'text-green-700' : 'text-gray-600'}`}
+                >
                   {day}
                 </div>
 
                 {/* Frost markers */}
                 {isFrostSpring && (
-                  <div className="text-[10px] text-blue-600 bg-blue-100 rounded px-1 mb-0.5" title="Last spring frost">
+                  <div
+                    className="text-[10px] text-blue-600 bg-blue-100 rounded px-1 mb-0.5"
+                    title="Last spring frost"
+                  >
                     ❄️ Frost
                   </div>
                 )}
                 {isFrostFall && (
-                  <div className="text-[10px] text-orange-600 bg-orange-100 rounded px-1 mb-0.5" title="First fall frost">
+                  <div
+                    className="text-[10px] text-orange-600 bg-orange-100 rounded px-1 mb-0.5"
+                    title="First fall frost"
+                  >
                     🍂 Frost
                   </div>
                 )}
@@ -168,7 +198,9 @@ export function CalendarView({ tasks, lastSpringFrost, firstFallFrost, climateZo
                     </div>
                   ))}
                   {dayTasks.length > 4 && (
-                    <div className="text-[10px] text-gray-400 self-center">+{dayTasks.length - 4}</div>
+                    <div className="text-[10px] text-gray-400 self-center">
+                      +{dayTasks.length - 4}
+                    </div>
                   )}
                 </div>
               </div>

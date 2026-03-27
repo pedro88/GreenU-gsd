@@ -27,9 +27,19 @@ interface DiscoverFeedProps {
 }
 
 /**
- * Discover feed with search, sort, filter, and pagination
+ * Discover feed component with search, sort, filter, and infinite scroll pagination.
+ * Displays public gardens with follow/unfollow functionality.
+ * @param root0 - Props object
+ * @param root0.initialGardens - Initial garden data to display
+ * @param root0.plantTypes - Available plant types for filtering
+ * @param root0.initialFollowingIds - Initial set of followed user IDs
+ * @returns The discover feed UI JSX
  */
-export function DiscoverFeed({ initialGardens, plantTypes, initialFollowingIds }: DiscoverFeedProps) {
+export function DiscoverFeed({
+  initialGardens,
+  plantTypes,
+  initialFollowingIds,
+}: DiscoverFeedProps) {
   const [gardens, setGardens] = useState<GardenSummary[]>(initialGardens);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set(initialFollowingIds));
   const [search, setSearch] = useState('');
@@ -38,34 +48,37 @@ export function DiscoverFeed({ initialGardens, plantTypes, initialFollowingIds }
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(false);
+  const [_initialLoad, setInitialLoad] = useState(false);
 
-  const fetchGardens = useCallback(async (reset: boolean = false) => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (sort === 'popular') params.set('sort', 'popular');
-      if (search.trim()) params.set('search', search.trim());
-      if (filterCrop) params.set('filterCrop', filterCrop);
-      if (!reset && cursor) params.set('cursor', cursor);
+  const fetchGardens = useCallback(
+    async (reset: boolean = false) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (sort === 'popular') params.set('sort', 'popular');
+        if (search.trim()) params.set('search', search.trim());
+        if (filterCrop) params.set('filterCrop', filterCrop);
+        if (!reset && cursor) params.set('cursor', cursor);
 
-      const res = await fetch(`/api/discover?${params.toString()}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (reset) {
-          setGardens(data.gardens);
-          setCursor(data.nextCursor);
-        } else {
-          setGardens((prev) => [...prev, ...data.gardens]);
-          setCursor(data.nextCursor);
+        const res = await fetch(`/api/discover?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (reset) {
+            setGardens(data.gardens);
+            setCursor(data.nextCursor);
+          } else {
+            setGardens((prev) => [...prev, ...data.gardens]);
+            setCursor(data.nextCursor);
+          }
+          setHasMore(!!data.nextCursor);
         }
-        setHasMore(!!data.nextCursor);
+      } finally {
+        setLoading(false);
+        if (reset) setInitialLoad(true);
       }
-    } finally {
-      setLoading(false);
-      if (reset) setInitialLoad(true);
-    }
-  }, [sort, search, filterCrop, cursor]);
+    },
+    [sort, search, filterCrop, cursor]
+  );
 
   // Debounced search
   useEffect(() => {
@@ -74,7 +87,7 @@ export function DiscoverFeed({ initialGardens, plantTypes, initialFollowingIds }
       fetchGardens(true);
     }, 300);
     return () => clearTimeout(timer);
-  }, [search, filterCrop, sort]);
+  }, [search, filterCrop, sort, fetchGardens]);
 
   const handleFollow = async (ownerId: string) => {
     const method = followingIds.has(ownerId) ? 'DELETE' : 'POST';
@@ -112,7 +125,10 @@ export function DiscoverFeed({ initialGardens, plantTypes, initialFollowingIds }
         </select>
         <select
           value={filterCrop}
-          onChange={(e) => { setFilterCrop(e.target.value); setCursor(null); }}
+          onChange={(e) => {
+            setFilterCrop(e.target.value);
+            setCursor(null);
+          }}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
         >
           <option value="">All crops</option>

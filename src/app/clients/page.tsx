@@ -19,6 +19,11 @@ interface Client {
   }>;
 }
 
+/**
+ * Clients management page listing all clients with their task counts.
+ * Protected route requiring authentication.
+ * @returns The clients page JSX
+ */
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +33,9 @@ export default function ClientsPage() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches the list of clients from the API.
+     */
     async function fetchClients() {
       try {
         const res = await fetch('/api/clients');
@@ -122,7 +130,11 @@ export default function ClientsPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setShowNew(false); setNewName(''); setNewEmail(''); }}
+              onClick={() => {
+                setShowNew(false);
+                setNewName('');
+                setNewEmail('');
+              }}
               className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
             >
               Cancel
@@ -140,7 +152,9 @@ export default function ClientsPage() {
         <div className="text-center py-16">
           <div className="text-4xl mb-3">👥</div>
           <h3 className="font-semibold text-gray-700 mb-1">No clients yet</h3>
-          <p className="text-sm text-gray-400 mb-4">Add your first client to start managing their garden tasks.</p>
+          <p className="text-sm text-gray-400 mb-4">
+            Add your first client to start managing their garden tasks.
+          </p>
           <button
             onClick={() => setShowNew(true)}
             className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500 transition-colors"

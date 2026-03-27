@@ -6,13 +6,12 @@ import { AnalyticsPageClient } from './AnalyticsPageClient';
 
 /**
  * Analytics Dashboard — /analytics/[gardenId]
- * Protected route showing garden performance metrics
+ * Protected route showing garden performance metrics.
+ * @param root0 - Props object
+ * @param root0.params - Route parameters containing gardenId
+ * @returns The analytics page JSX
  */
-export default async function AnalyticsPage({
-  params,
-}: {
-  params: Promise<{ gardenId: string }>;
-}) {
+export default async function AnalyticsPage({ params }: { params: Promise<{ gardenId: string }> }) {
   return (
     <ProtectedRoute>
       <AnalyticsPageInner params={params} />
@@ -20,11 +19,13 @@ export default async function AnalyticsPage({
   );
 }
 
-async function AnalyticsPageInner({
-  params,
-}: {
-  params: Promise<{ gardenId: string }>;
-}) {
+/**
+ * Inner analytics page component that handles auth and data fetching
+ * @param root0 - Destructured params object
+ * @param root0.params - Route parameters containing gardenId
+ * @returns The analytics page client component
+ */
+async function AnalyticsPageInner({ params }: { params: Promise<{ gardenId: string }> }) {
   const session = await auth();
   const { gardenId } = await params;
 

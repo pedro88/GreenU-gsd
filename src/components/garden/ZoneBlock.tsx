@@ -11,7 +11,15 @@ interface ZoneBlockProps {
 }
 
 /**
- * Zone block displaying its plots in a grid layout
+ * Zone block that displays its plots in a grid layout with zone-specific styling.
+ * @param root0 - Props object
+ * @param root0.zone - Zone layout data containing plots
+ * @param root0.canEdit - Whether the user can edit the zone
+ * @param root0.onAddPlot - Callback when adding a new plot
+ * @param root0.onDeleteZone - Callback when deleting the zone
+ * @param root0.onAddCrop - Callback when adding a crop to a plot
+ * @param root0.onViewCrop - Callback when viewing crop details
+ * @returns The rendered zone block with plots grid
  */
 export function ZoneBlock({
   zone,
@@ -40,10 +48,7 @@ export function ZoneBlock({
   const style = zoneTypeStyles[zone.type] ?? zoneTypeStyles.OUTDOOR;
 
   return (
-    <div
-      className={`rounded-xl border-2 p-3 flex flex-col gap-2 ${style}`}
-      data-zone-id={zone.id}
-    >
+    <div className={`rounded-xl border-2 p-3 flex flex-col gap-2 ${style}`} data-zone-id={zone.id}>
       {/* Zone header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">

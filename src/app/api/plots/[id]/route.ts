@@ -6,16 +6,17 @@ import { canReadGarden, canWriteGarden, isGardenOwner } from '@/lib/gardenAccess
 
 /**
  * GET /api/plots/[id]
- * Get a specific plot with crops
+ * Get a specific plot with crops.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the plot ID
+ * @returns The plot with crops and rotation log, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -57,11 +58,11 @@ export async function GET(
       },
     });
 
-    if (!plot) {
+    if (!plotWithData) {
       return NextResponse.json({ error: 'Plot not found' }, { status: 404 });
     }
 
-    return NextResponse.json(plot);
+    return NextResponse.json(plotWithData);
   } catch (error) {
     console.error('Failed to fetch plot:', error);
     return NextResponse.json({ error: 'Failed to fetch plot' }, { status: 500 });
@@ -77,16 +78,17 @@ const updatePlotSchema = z.object({
 
 /**
  * PATCH /api/plots/[id]
- * Update a plot (owner or editor)
+ * Update a plot (owner or editor only).
+ * @param request - The incoming HTTP request with update data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the plot ID
+ * @returns The updated plot, or an error response
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -111,10 +113,7 @@ export async function PATCH(
     const validation = updatePlotSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const plot = await prisma.plot.update({
@@ -134,7 +133,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/plots/[id]
- * Delete a plot (owner only)
+ * Delete a plot (owner only).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the plot ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,
@@ -143,7 +146,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -161,7 +164,10 @@ export async function DELETE(
     // Only owner can delete plots
     const isOwner = await isGardenOwner(session.user.id, existing.zone.gardenId);
     if (!isOwner) {
-      return NextResponse.json({ error: 'Only the garden owner can delete plots' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Only the garden owner can delete plots' },
+        { status: 403 }
+      );
     }
 
     await prisma.plot.delete({ where: { id } });

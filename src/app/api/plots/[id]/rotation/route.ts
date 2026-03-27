@@ -4,16 +4,20 @@ import { prisma } from '@/lib/db';
 
 /**
  * GET /api/plots/[id]/rotation
- * Get crop rotation suggestions based on historical plantings
+ * Get crop rotation suggestions based on historical plantings.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with plot ID
+ * @returns Rotation suggestions with history and guidelines, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -47,9 +51,8 @@ export async function GET(
       return NextResponse.json({ error: 'Plot not found' }, { status: 404 });
     }
 
-    const currentYear = new Date().getFullYear();
     const lastPlantingFamily = plot.rotationLog[0]?.family || null;
-    const recentFamilies = plot.rotationLog.slice(0, 3).map(r => r.familyId);
+    const recentFamilies = plot.rotationLog.slice(0, 3).map((r) => r.familyId);
 
     // Get all plant families with their types
     const families = await prisma.plantFamily.findMany({
@@ -92,7 +95,7 @@ export async function GET(
       suggestions.push({
         family: family.name,
         description,
-        suitableTypes: family.plantTypes.map(t => t.name),
+        suitableTypes: family.plantTypes.map((t) => t.name),
         reason,
       });
     }
@@ -112,11 +115,13 @@ export async function GET(
         name: plot.name,
       },
       history: {
-        lastFamily: lastPlantingFamily ? {
-          name: lastPlantingFamily.name,
-          description: lastPlantingFamily.description,
-        } : null,
-        recentPlantings: plot.rotationLog.map(r => ({
+        lastFamily: lastPlantingFamily
+          ? {
+              name: lastPlantingFamily.name,
+              description: lastPlantingFamily.description,
+            }
+          : null,
+        recentPlantings: plot.rotationLog.map((r) => ({
           year: r.year,
           family: r.family.name,
           season: r.season,

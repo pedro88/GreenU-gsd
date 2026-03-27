@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 
-interface Participant {
-  id: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-}
-
 interface NewMessageDialogProps {
   onClose: () => void;
   onCreated: (conversationId: string) => void;
 }
 
+/**
+ * Dialog component for starting a new conversation with another gardener.
+ * @param root0 - destructured props object
+ * @param root0.onClose - Callback to close the dialog
+ * @param root0.onCreated - Callback with the created conversation ID when successfully created
+ * @returns The dialog UI with a form to select recipient, optional garden link, and initial message
+ */
 export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -56,7 +56,10 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -113,9 +116,7 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
             />
           </div>
 
-          {error && (
-            <div className="text-xs text-red-500">{error}</div>
-          )}
+          {error && <div className="text-xs text-red-500">{error}</div>}
 
           <div className="flex gap-3 justify-end pt-2">
             <button

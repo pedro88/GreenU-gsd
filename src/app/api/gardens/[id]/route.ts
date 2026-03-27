@@ -9,11 +9,12 @@ import { canReadGarden } from '@/lib/gardenAccess';
  * Get a specific garden with zones and plots.
  * Public gardens are accessible without auth (read-only, limited data).
  * Private gardens require auth and owner access.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID
+ * @returns The garden with zones and plots, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -83,12 +84,13 @@ const updateGardenSchema = z.object({
 
 /**
  * PATCH /api/gardens/[id]
- * Update a garden (owner only)
+ * Update a garden (owner only).
+ * @param request - The incoming HTTP request with update data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID
+ * @returns The updated garden, or an error response
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -109,10 +111,7 @@ export async function PATCH(
     const validation = updateGardenSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const garden = await prisma.garden.update({
@@ -136,7 +135,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/gardens/[id]
- * Delete a garden and all its contents (owner only)
+ * Delete a garden and all its contents (owner only).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,

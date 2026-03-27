@@ -4,13 +4,13 @@ import { prisma } from '@/lib/db';
 
 /**
  * POST /api/users/[id]/follow
- * Follow another user
- * Body: none required — target user id is in URL params
+ * Follow another user.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the target user ID
+ * @returns A success message with following status, or an error response
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: followingId } = await params;
     const session = await auth();
@@ -66,7 +66,11 @@ export async function POST(
 
 /**
  * DELETE /api/users/[id]/follow
- * Unfollow a user
+ * Unfollow a user.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the target user ID
+ * @returns A success message with unfollow status, or an error response
  */
 export async function DELETE(
   request: NextRequest,

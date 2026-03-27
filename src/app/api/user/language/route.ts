@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/user/language
+ * Sets the preferred language for the authenticated user.
+ * Validates the language is one of the supported options (en, fr, es).
+ * @param request - The incoming Next.js request object containing the language preference
+ * @returns JSON response with success status and the updated language, or an error response
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

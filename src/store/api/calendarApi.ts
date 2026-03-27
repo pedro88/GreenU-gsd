@@ -30,9 +30,7 @@ export const calendarApi = createApi({
   endpoints: (builder) => ({
     getCalendar: builder.query<CalendarResponse, string>({
       query: (gardenId) => `/calendar/${gardenId}`,
-      providesTags: (_result, _error, gardenId) => [
-        { type: 'Calendar', id: gardenId },
-      ],
+      providesTags: (_result, _error, gardenId) => [{ type: 'Calendar', id: gardenId }],
     }),
   }),
 });

@@ -15,10 +15,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="mb-1.5 block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-gray-700">
             {label}
           </label>
         )}
@@ -46,12 +43,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               tabIndex={-1}
             >
               {showPassword ? (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -60,12 +52,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                   />
                 </svg>
               ) : (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -84,9 +71,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
-        {helperText && !error && (
-          <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>
-        )}
+        {helperText && !error && <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>}
       </div>
     );
   }

@@ -8,7 +8,11 @@ interface TaskListProps {
 }
 
 /**
- * Scrollable task list filtered by time period
+ * Scrollable task list filtered by time period (all, today, week, month).
+ * Groups tasks by date and displays them with type-based color coding.
+ * @param root0 - Props object
+ * @param root0.tasks - Array of calendar tasks to display
+ * @returns The filtered, grouped task list JSX
  */
 export function TaskList({ tasks }: TaskListProps) {
   const [filter, setFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
@@ -67,7 +71,13 @@ export function TaskList({ tasks }: TaskListProps) {
             className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors capitalize
               ${filter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
-            {f === 'all' ? 'All' : f === 'today' ? 'Today' : f === 'week' ? 'This week' : 'This month'}
+            {f === 'all'
+              ? 'All'
+              : f === 'today'
+                ? 'Today'
+                : f === 'week'
+                  ? 'This week'
+                  : 'This month'}
           </button>
         ))}
       </div>
@@ -78,7 +88,9 @@ export function TaskList({ tasks }: TaskListProps) {
           <div className="text-2xl mb-2">📋</div>
           <p className="text-sm">No tasks scheduled</p>
           <p className="text-xs mt-1">
-            {filter === 'all' ? 'Add crops to your garden to see tasks' : `No tasks ${filter === 'today' ? 'today' : 'this ' + filter}`}
+            {filter === 'all'
+              ? 'Add crops to your garden to see tasks'
+              : `No tasks ${filter === 'today' ? 'today' : 'this ' + filter}`}
           </p>
         </div>
       ) : (

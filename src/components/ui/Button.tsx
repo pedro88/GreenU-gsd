@@ -23,14 +23,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
-      primary:
-        'bg-green-600 text-white hover:bg-green-500 focus-visible:ring-green-600',
-      secondary:
-        'bg-gray-600 text-white hover:bg-gray-500 focus-visible:ring-gray-600',
+      primary: 'bg-green-600 text-white hover:bg-green-500 focus-visible:ring-green-600',
+      secondary: 'bg-gray-600 text-white hover:bg-gray-500 focus-visible:ring-gray-600',
       outline:
         'border-2 border-green-600 text-green-600 hover:bg-green-50 focus-visible:ring-green-600',
-      ghost:
-        'text-gray-600 hover:bg-gray-100 focus-visible:ring-gray-600',
+      ghost: 'text-gray-600 hover:bg-gray-100 focus-visible:ring-gray-600',
     };
 
     const sizes = {
@@ -48,11 +45,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? (
           <>
-            <svg
-              className="mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+            <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"

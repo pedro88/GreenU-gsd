@@ -9,16 +9,19 @@ const signupSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
 });
 
+/**
+ * POST handler for user registration (sign-up).
+ * Validates input, checks for existing accounts, hashes password, and creates a new user.
+ * @param request - The incoming HTTP request containing email, password, and optional name
+ * @returns A JSON response with the created user ID or an error message
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validation = signupSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { email, password, name } = validation.data;
@@ -50,9 +53,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Signup error:', error);
-    return NextResponse.json(
-      { error: 'An error occurred during signup' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'An error occurred during signup' }, { status: 500 });
   }
 }

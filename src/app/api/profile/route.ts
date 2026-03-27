@@ -8,7 +8,13 @@ const updateLocationSchema = z.object({
   longitude: z.number().min(-180).max(180).nullable().optional(),
 });
 
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/profile
+ * Retrieves the current authenticated user's profile including name, email, preferences, and location.
+ * @param _request - The incoming Next.js request object (unused)
+ * @returns JSON response with the user profile data, or an error response if unauthorized
+ */
+export async function GET(_request: NextRequest): Promise<NextResponse> {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -38,7 +44,14 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(user);
 }
 
-export async function PATCH(request: NextRequest) {
+/**
+ * PATCH /api/profile
+ * Updates the current user's profile, specifically their location coordinates (latitude/longitude).
+ * Validates the input using a Zod schema before updating.
+ * @param request - The incoming Next.js request object containing the update payload
+ * @returns JSON response with the updated user profile, or an error response on failure
+ */
+export async function PATCH(request: NextRequest): Promise<NextResponse> {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -50,10 +63,7 @@ export async function PATCH(request: NextRequest) {
     const validation = updateLocationSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const user = await prisma.user.update({

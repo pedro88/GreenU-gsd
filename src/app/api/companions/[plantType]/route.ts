@@ -4,16 +4,20 @@ import { prisma } from '@/lib/db';
 
 /**
  * GET /api/companions/[plantType]
- * Get companion planting info for a specific plant type
+ * Get companion planting info for a specific plant type.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with plant type identifier
+ * @returns Plant info with companions and incompatible plants, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ plantType: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { plantType } = await params;
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -21,10 +25,7 @@ export async function GET(
     // Find the plant type by name or ID
     const plant = await prisma.plantType.findFirst({
       where: {
-        OR: [
-          { id: plantType },
-          { name: { equals: plantType, mode: 'insensitive' } },
-        ],
+        OR: [{ id: plantType }, { name: { equals: plantType, mode: 'insensitive' } }],
       },
       include: {
         family: true,
@@ -51,12 +52,12 @@ export async function GET(
 
     // Combine rules from both perspectives
     const companions = [
-      ...plant.rulesAsPlant1.map(r => ({
+      ...plant.rulesAsPlant1.map((r) => ({
         plant: r.plant2,
         relationship: r.relationship,
         description: r.description,
       })),
-      ...plant.rulesAsPlant2.map(r => ({
+      ...plant.rulesAsPlant2.map((r) => ({
         plant: r.plant1,
         relationship: r.relationship,
         description: r.description,
@@ -64,11 +65,11 @@ export async function GET(
     ];
 
     const companions_list = companions
-      .filter(r => r.relationship === 'COMPANION')
-      .map(r => r.plant);
+      .filter((r) => r.relationship === 'COMPANION')
+      .map((r) => r.plant);
     const incompatibles = companions
-      .filter(r => r.relationship === 'INCOMPATIBLE')
-      .map(r => r.plant);
+      .filter((r) => r.relationship === 'INCOMPATIBLE')
+      .map((r) => r.plant);
 
     return NextResponse.json({
       plant: {

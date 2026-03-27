@@ -10,8 +10,11 @@ interface AnalyticsDashboardProps {
 }
 
 /**
- * Main analytics dashboard component
- * Displays summary stats and charts
+ * Main analytics dashboard component that displays garden statistics and charts.
+ * Shows summary cards with key metrics, yield/crop charts, and a zone breakdown table.
+ * @param props - Component props containing analytics data
+ * @param props.data - Full analytics response including summary, crops, and zone data
+ * @returns The rendered analytics dashboard with charts and summary statistics
  */
 export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
   const { summary, topCrops, cropsByFamily, monthlyActivity, zones } = data;
@@ -42,7 +45,13 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
           label="Success rate"
           value={`${summary.successRate}%`}
           icon="📈"
-          color={summary.successRate >= 70 ? 'bg-green-50 text-green-700' : summary.successRate >= 40 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'}
+          color={
+            summary.successRate >= 70
+              ? 'bg-green-50 text-green-700'
+              : summary.successRate >= 40
+                ? 'bg-amber-50 text-amber-700'
+                : 'bg-red-50 text-red-700'
+          }
           subtitle={summary.totalFailed > 0 ? `${summary.totalFailed} failed` : undefined}
         />
       </div>
@@ -89,7 +98,9 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                     <td className="py-2 px-3 text-right text-gray-600">{zone.crops}</td>
                     <td className="py-2 px-3 text-right text-gray-600">{zone.harvests}</td>
                     <td className="py-2 px-3 text-right">
-                      <span className={`font-medium ${zone.crops > 0 && zone.harvests / zone.crops >= 0.5 ? 'text-green-600' : 'text-gray-600'}`}>
+                      <span
+                        className={`font-medium ${zone.crops > 0 && zone.harvests / zone.crops >= 0.5 ? 'text-green-600' : 'text-gray-600'}`}
+                      >
                         {zone.crops > 0 ? Math.round((zone.harvests / zone.crops) * 100) : 0}%
                       </span>
                     </td>
@@ -112,11 +123,24 @@ interface StatCardProps {
   subtitle?: string;
 }
 
+/**
+ * Renders a single stat card displaying a metric with an icon and color-coded background.
+ * Used within the analytics dashboard summary section.
+ * @param props - Stat card display properties
+ * @param props.label - Short uppercase label for the stat metric
+ * @param props.value - The numeric or string metric value to display prominently
+ * @param props.icon - Emoji icon displayed alongside the label
+ * @param props.color - Tailwind CSS classes for the card background and text color
+ * @param props.subtitle - Optional secondary text shown below the value
+ * @returns The rendered stat card element
+ */
 function StatCard({ label, value, icon, color, subtitle }: StatCardProps) {
   return (
     <div className={`rounded-xl p-4 ${color}`}>
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg" aria-hidden>{icon}</span>
+        <span className="text-lg" aria-hidden>
+          {icon}
+        </span>
         <span className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</span>
       </div>
       <div className="text-2xl font-bold">{value}</div>

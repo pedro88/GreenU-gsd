@@ -22,6 +22,12 @@ interface MessageThreadProps {
   currentUserId: string;
 }
 
+/**
+ * Formats a message timestamp into a human-readable time string.
+ * Shows time only for today's messages, or date+time for older messages.
+ * @param dateStr - ISO date string of the message creation time
+ * @returns Formatted time string (e.g., "2:30 PM" or "Mar 15, 2:30 PM")
+ */
 function formatMessageTime(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
@@ -31,10 +37,21 @@ function formatMessageTime(dateStr: string): string {
   if (diffDays === 0) {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   } else {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 }
 
+/**
+ * Formats a date string into a relative or absolute date label for message grouping.
+ * Returns "Today", "Yesterday", or a full weekday/month/day format.
+ * @param dateStr - ISO date string to format
+ * @returns Human-readable date label for a message date divider
+ */
 function formatDateDivider(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
@@ -46,6 +63,14 @@ function formatDateDivider(dateStr: string): string {
   return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
+/**
+ * Message thread component displaying a conversation with message history and send functionality.
+ * Supports infinite scrolling for loading older messages and real-time message sending.
+ * @param props - Component props for conversation and user context
+ * @param props.conversationId - ID of the conversation to display
+ * @param props.currentUserId - ID of the currently authenticated user
+ * @returns The rendered message thread with header, messages, and input
+ */
 export function MessageThread({ conversationId, currentUserId }: MessageThreadProps) {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -58,6 +83,11 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch conversation and messages
+  /**
+   * Fetches conversation details and messages from the API.
+   * Supports pagination via cursor for loading older messages.
+   * @param cursor - Optional pagination cursor for loading older messages
+   */
   async function fetchConversation(cursor?: string) {
     try {
       const url = cursor
@@ -83,7 +113,7 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
 
   useEffect(() => {
     fetchConversation();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
   // Auto-scroll to bottom on new messages
@@ -134,8 +164,8 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
   const title = conversation?.garden
     ? `🌱 ${conversation.garden.name}`
     : otherParticipants.length === 1
-    ? (otherParticipants[0].name || otherParticipants[0].email)
-    : `${otherParticipants.length} participants`;
+      ? otherParticipants[0].name || otherParticipants[0].email
+      : `${otherParticipants.length} participants`;
 
   // Group messages by date
   const messagesByDate: Record<string, Message[]> = {};
@@ -149,7 +179,10 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
     <div className="flex flex-col h-[calc(100vh-120px)]">
       {/* Thread header */}
       <div className="flex items-center gap-3 pb-3 border-b border-gray-100 mb-3">
-        <Link href="/messages" className="text-gray-400 hover:text-gray-600 transition-colors text-sm">
+        <Link
+          href="/messages"
+          className="text-gray-400 hover:text-gray-600 transition-colors text-sm"
+        >
           ← Back
         </Link>
         <div>
@@ -212,11 +245,7 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
                           </div>
                         )}
                         <div className="text-sm whitespace-pre-wrap break-words">{msg.content}</div>
-                        <div
-                          className={`text-xs mt-1 opacity-60 ${
-                            isMe ? 'text-right' : ''
-                          }`}
-                        >
+                        <div className={`text-xs mt-1 opacity-60 ${isMe ? 'text-right' : ''}`}>
                           {formatMessageTime(msg.createdAt)}
                         </div>
                       </div>

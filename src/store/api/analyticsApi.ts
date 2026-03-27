@@ -23,9 +23,7 @@ export const analyticsApi = createApi({
   endpoints: (builder) => ({
     getAnalytics: builder.query<AnalyticsResponse, string>({
       query: (gardenId) => `/analytics/${gardenId}`,
-      providesTags: (_result, _error, gardenId) => [
-        { type: 'Analytics', id: gardenId },
-      ],
+      providesTags: (_result, _error, gardenId) => [{ type: 'Analytics', id: gardenId }],
     }),
   }),
 });

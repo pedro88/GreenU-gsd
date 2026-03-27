@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
+import { canReadGarden } from '@/lib/gardenAccess';
 
 /**
  * GET /api/gardens/[id]/visualization
- * Returns structured layout data for garden visualization
+ * Returns structured layout data for garden visualization with zones and plots.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with garden ID
+ * @returns The garden visualization data with computed layout information, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const session = await auth();
@@ -98,9 +102,6 @@ export async function GET(
     });
   } catch (error) {
     console.error('Failed to fetch garden visualization:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch garden visualization' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch garden visualization' }, { status: 500 });
   }
 }

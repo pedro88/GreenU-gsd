@@ -3,9 +3,10 @@ import { prisma } from '@/lib/db';
 import { DiscoverFeed } from '@/components/discover/DiscoverFeed';
 
 /**
- * Discover Feed — /discover
- * Public page showing all public gardens.
+ * Discover Feed page — /discover
+ * Public page showing all public gardens with search, filter, and follow functionality.
  * Accessible without authentication.
+ * @returns The discover page JSX
  */
 export default async function DiscoverPage() {
   const session = await auth();
@@ -43,7 +44,13 @@ export default async function DiscoverPage() {
   });
 
   // Batch fetch plant types for initial gardens
-  const allPlantTypeIds = Array.from(new Set(initialGardens.flatMap((g) => g.zones.flatMap((z) => z.plots.flatMap((p) => p.crops.map((c) => c.plantTypeId))))));
+  const allPlantTypeIds = Array.from(
+    new Set(
+      initialGardens.flatMap((g) =>
+        g.zones.flatMap((z) => z.plots.flatMap((p) => p.crops.map((c) => c.plantTypeId)))
+      )
+    )
+  );
   const plantTypes = await prisma.plantType.findMany({
     where: { id: { in: allPlantTypeIds } },
     select: { id: true, name: true },
@@ -103,7 +110,10 @@ export default async function DiscoverPage() {
             {session?.user ? (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">
-                  Signed in as <span className="font-medium text-gray-700">{session.user.name || session.user.email}</span>
+                  Signed in as{' '}
+                  <span className="font-medium text-gray-700">
+                    {session.user.name || session.user.email}
+                  </span>
                 </span>
               </div>
             ) : (

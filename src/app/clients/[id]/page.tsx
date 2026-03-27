@@ -41,11 +41,18 @@ const statusLabels: Record<string, string> = {
   CANCELLED: 'Cancelled',
 };
 
+/**
+ * Client detail page showing client information and associated tasks.
+ * Allows creating new tasks and changing task statuses.
+ * @param root0 - Destructured props with route params
+ * @param root0.params - Route parameters with client ID
+ * @returns The client detail page with task management UI
+ */
 export default function ClientDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {
+}): JSX.Element {
   const [client, setClient] = useState<ClientDetail | null>(null);
   const [gardens, setGardens] = useState<Garden[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +64,9 @@ export default function ClientDetailPage({
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
+    /**
+     * Loads client data and available gardens for task creation.
+     */
     async function load() {
       const { id } = await params;
       try {
@@ -76,7 +86,7 @@ export default function ClientDetailPage({
       }
     }
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -97,9 +107,7 @@ export default function ClientDetailPage({
       });
       if (res.ok) {
         const task = await res.json();
-        setClient((prev) =>
-          prev ? { ...prev, tasks: [...prev.tasks, task] } : prev
-        );
+        setClient((prev) => (prev ? { ...prev, tasks: [...prev.tasks, task] } : prev));
         setNewTaskTitle('');
         setNewTaskGarden('');
         setNewTaskAssignee('');
@@ -126,7 +134,9 @@ export default function ClientDetailPage({
           prev
             ? {
                 ...prev,
-                tasks: prev.tasks.map((t) => (t.id === taskId ? { ...t, status: updated.status } : t)),
+                tasks: prev.tasks.map((t) =>
+                  t.id === taskId ? { ...t, status: updated.status } : t
+                ),
               }
             : prev
         );
@@ -149,7 +159,10 @@ export default function ClientDetailPage({
       <div className="container mx-auto max-w-2xl px-4 py-8 text-center">
         <div className="text-4xl mb-3">🔍</div>
         <h3 className="font-semibold text-gray-700">Client not found</h3>
-        <Link href="/clients" className="text-sm text-green-600 hover:text-green-700 mt-2 inline-block">
+        <Link
+          href="/clients"
+          className="text-sm text-green-600 hover:text-green-700 mt-2 inline-block"
+        >
           ← Back to clients
         </Link>
       </div>
@@ -229,7 +242,9 @@ export default function ClientDetailPage({
               >
                 <option value="">No garden</option>
                 {gardens.map((g) => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -296,9 +311,7 @@ export default function ClientDetailPage({
                         <div className="flex-1">
                           <div className="font-medium text-gray-900 text-sm">{task.title}</div>
                           <div className="text-xs text-gray-400 mt-0.5 space-x-1">
-                            {task.garden && (
-                              <span>🌱 {task.garden.name}</span>
-                            )}
+                            {task.garden && <span>🌱 {task.garden.name}</span>}
                             <span>Assigned to: {task.assignee.name || task.assignee.email}</span>
                             {task.dueDate && (
                               <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
@@ -311,7 +324,9 @@ export default function ClientDetailPage({
                           className="text-xs border border-gray-200 rounded px-2 py-1 bg-white text-gray-600 focus:outline-none"
                         >
                           {Object.entries(statusLabels).map(([val, label]) => (
-                            <option key={val} value={val}>{label}</option>
+                            <option key={val} value={val}>
+                              {label}
+                            </option>
                           ))}
                         </select>
                       </div>

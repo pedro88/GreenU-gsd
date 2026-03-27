@@ -4,12 +4,16 @@ import { prisma } from '@/lib/db';
 
 /**
  * GET /api/conversations/[id]
- * Get a conversation with its messages (paginated)
+ * Get a conversation with its messages (paginated).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Route parameters with conversation ID
+ * @returns The conversation with participants, messages, and next cursor, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const session = await auth();

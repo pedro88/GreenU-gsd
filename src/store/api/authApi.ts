@@ -12,10 +12,7 @@ export const authApi = createApi({
       query: () => '/profile',
       providesTags: ['Profile'],
     }),
-    updateProfile: builder.mutation<
-      AuthUser,
-      Partial<AuthUser>
-    >({
+    updateProfile: builder.mutation<AuthUser, Partial<AuthUser>>({
       query: (data) => ({
         url: '/profile',
         method: 'PATCH',

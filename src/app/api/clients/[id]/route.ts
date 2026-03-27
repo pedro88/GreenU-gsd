@@ -5,12 +5,13 @@ import { z } from 'zod';
 
 /**
  * GET /api/clients/[id]
- * Get a specific client with their tasks
+ * Get a specific client with their tasks.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the client ID
+ * @returns The client with tasks, or an error response
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -51,12 +52,13 @@ const updateClientSchema = z.object({
 
 /**
  * PATCH /api/clients/[id]
- * Update a client
+ * Update a client's information.
+ * @param request - The incoming HTTP request with update data
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the client ID
+ * @returns The updated client, or an error response
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -76,10 +78,7 @@ export async function PATCH(
     const validation = updateClientSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const client = await prisma.client.update({
@@ -96,7 +95,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/clients/[id]
- * Delete a client and all their tasks
+ * Delete a client and all their tasks.
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the client ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,

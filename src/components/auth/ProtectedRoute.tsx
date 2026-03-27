@@ -9,9 +9,17 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+/**
+ * A route wrapper that redirects unauthenticated users to the sign-in page
+ * and optionally restricts access to users with specific roles.
+ * @param root0 - destructured props object
+ * @param root0.children - The child elements to render if authenticated
+ * @param root0.allowedRoles - Optional array of role names to restrict access
+ * @returns The children if authenticated, or null/unauthenticated state otherwise
+ */
 export function ProtectedRoute({
   children,
-  allowedRoles = [],
+  allowedRoles: _allowedRoles = [],
 }: ProtectedRouteProps) {
   const { data: session, status } = useSession();
   const router = useRouter();

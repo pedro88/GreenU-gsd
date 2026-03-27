@@ -16,7 +16,18 @@ interface GardenCanvasProps {
 }
 
 /**
- * Main garden canvas — renders all zones in a responsive grid
+ * Main garden canvas component that renders all zones in a responsive grid layout.
+ * Displays zone blocks with plots and crops, and handles zone deletion with confirmation.
+ * @param props - Canvas rendering and interaction props
+ * @param props.data - Garden visualization data containing all zones with their plots and crops
+ * @param props.canEdit - Whether the current user has edit permissions for the garden
+ * @param props.onAddZone - Callback invoked when the user clicks to add a new zone
+ * @param props.onAddPlot - Callback invoked with a zoneId when adding a plot to a specific zone
+ * @param props.onDeleteZone - Callback invoked with a zoneId when deleting a zone
+ * @param props.onAddCrop - Callback invoked with a plotId when adding a crop to a specific plot
+ * @param props.onViewCrop - Callback invoked with a cropId when viewing details of a crop
+ * @param props.isLoading - Whether the garden data is currently loading (shows spinner when true)
+ * @returns The rendered garden canvas with zones grid and optional empty state
  */
 export function GardenCanvas({
   data,

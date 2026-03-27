@@ -5,12 +5,13 @@ import { z } from 'zod';
 
 /**
  * GET /api/gardens
- * List all gardens for the authenticated user
+ * List all gardens for the authenticated user (owned and collaborated).
+ * @returns Array of gardens with zones, plots, and crops, or an error response
  */
 export async function GET() {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,10 +19,7 @@ export async function GET() {
     // Fetch owned gardens AND gardens where user is a collaborator
     const gardens = await prisma.garden.findMany({
       where: {
-        OR: [
-          { userId: session.user.id },
-          { collaborators: { some: { userId: session.user.id } } },
-        ],
+        OR: [{ userId: session.user.id }, { collaborators: { some: { userId: session.user.id } } }],
       },
       include: {
         zones: {
@@ -56,12 +54,14 @@ const createGardenSchema = z.object({
 
 /**
  * POST /api/gardens
- * Create a new garden
+ * Create a new garden.
+ * @param request - The incoming HTTP request with garden data
+ * @returns The created garden record with default zones, or an error response
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -70,10 +70,7 @@ export async function POST(request: NextRequest) {
     const validation = createGardenSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const { name, description, location } = validation.data;

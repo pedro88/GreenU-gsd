@@ -7,12 +7,17 @@ import { canReadGarden } from '@/lib/gardenAccess';
 
 /**
  * GET /api/calendar/[gardenId]
- * Returns upcoming garden tasks based on user's location and planted crops (any garden reader)
+ * Returns upcoming garden tasks based on the garden's location climate zone and planted crops.
+ * Tasks include sowing, transplanting, fertilizing, and harvesting reminders.
+ * @param request - The incoming Next.js request object (unused but required by Next.js routing)
+ * @param root0 - Destructured route parameters
+ * @param root0.params - Promise resolving to route params containing gardenId
+ * @returns JSON response with garden tasks, climate zone info, and frost dates, or an error response
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ gardenId: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { gardenId } = await params;
     const session = await auth();
@@ -37,7 +42,10 @@ export async function GET(
       select: { language: true, latitude: true, longitude: true },
     });
 
-    const climateZone = inferClimateZone(gardenOwner?.language ?? 'en', gardenOwner?.latitude ?? null);
+    const climateZone = inferClimateZone(
+      gardenOwner?.language ?? 'en',
+      gardenOwner?.latitude ?? null
+    );
 
     // Parse frost dates for current year
     const year = new Date().getFullYear();
@@ -119,7 +127,12 @@ export async function GET(
             plotName: plot.name,
             zoneName: plot.zone.name,
             gardenId,
-            status: effectiveDate < now ? 'overdue' : effectiveDate.toDateString() === now.toDateString() ? 'today' : 'upcoming',
+            status:
+              effectiveDate < now
+                ? 'overdue'
+                : effectiveDate.toDateString() === now.toDateString()
+                  ? 'today'
+                  : 'upcoming',
           });
         }
       }
@@ -156,6 +169,13 @@ interface CalendarTask {
   status: 'overdue' | 'today' | 'upcoming';
 }
 
+/**
+ * Generates a human-readable label for a garden task based on task type and plant name.
+ * Maps common task types to action phrases like "Sow {plant} indoors" or "Harvest {plant}".
+ * @param type - The task type identifier (e.g., sow_indoors, transplant, harvest)
+ * @param plantName - The name of the plant the task applies to
+ * @returns A formatted, user-friendly task description string
+ */
 function getTaskLabel(type: string, plantName: string): string {
   const labels: Record<string, string> = {
     sow_indoors: `Sow ${plantName} indoors`,

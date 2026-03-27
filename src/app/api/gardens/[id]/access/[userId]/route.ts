@@ -5,7 +5,11 @@ import { z } from 'zod';
 
 /**
  * PATCH /api/gardens/[id]/access/[userId]
- * Update a collaborator's role (owner only)
+ * Update a collaborator's role (owner only).
+ * @param request - The incoming HTTP request with role update
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID and user ID
+ * @returns The updated access record, or an error response
  */
 export async function PATCH(
   request: NextRequest,
@@ -36,10 +40,7 @@ export async function PATCH(
     const validation = updateSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
     const access = await prisma.gardenAccess.findUnique({
@@ -67,7 +68,11 @@ export async function PATCH(
 
 /**
  * DELETE /api/gardens/[id]/access/[userId]
- * Remove a collaborator's access (owner only)
+ * Remove a collaborator's access (owner only).
+ * @param request - The incoming HTTP request
+ * @param root0 - Destructured route parameters
+ * @param root0.params - The route parameters containing the garden ID and user ID
+ * @returns A success message, or an error response
  */
 export async function DELETE(
   request: NextRequest,

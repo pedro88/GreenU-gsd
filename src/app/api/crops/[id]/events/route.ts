@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 import { addXpByEvent, updateStreak } from '@/lib/xpService';
+import { checkAchievements } from '@/lib/achievementService';
 
 /**
  * POST /api/crops/[cropId]/events
@@ -115,6 +116,13 @@ export async function POST(
         metadata: { cropId, eventType },
       }).catch(console.error);
       updateStreak(garden.userId).catch(console.error);
+      // Check achievements after cultivation action
+      checkAchievements(garden.userId, {
+        userId: garden.userId,
+        eventType,
+        eventDate: date,
+        metadata: { cropId },
+      }).catch(console.error);
     }
 
     return NextResponse.json(event, { status: 201 });

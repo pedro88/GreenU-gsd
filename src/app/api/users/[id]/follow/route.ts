@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { checkAchievements } from '@/lib/achievementService';
 
 /**
  * POST /api/users/[id]/follow
@@ -52,6 +53,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         data: { followerCount: { increment: 1 } },
       }),
     ]);
+
+    // Check achievements for the followed user (their followerCount increased)
+    checkAchievements(followingId, { userId: followingId }).catch(console.error);
 
     return NextResponse.json({ following: true }, { status: 201 });
   } catch (error) {

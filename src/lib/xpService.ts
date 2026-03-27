@@ -158,6 +158,14 @@ export async function awardXp(opts: AwardXpOptions): Promise<{
     }),
   ]);
 
+  // Check level achievements on level-up
+  if (leveledUp) {
+    // Dynamic import to avoid circular dependency
+    import('@/lib/achievementService')
+      .then(({ checkAchievements }) => checkAchievements(userId, { userId }).catch(console.error))
+      .catch(console.error);
+  }
+
   return {
     stats: {
       totalXp: updatedStats.totalXp,
@@ -256,11 +264,16 @@ export async function updateStreak(userId: string): Promise<{
     await awardXp({ userId, amount: xpAwarded, reason: 'STREAK_BONUS' });
   }
 
-  // Update lastActiveDate (without changing level/totalXP here — awardXp already handles that)
+  // Update lastActiveDate and streak counters
   await prisma.userStats.update({
     where: { userId },
     data: { currentStreak: newStreak, longestStreak, lastActiveDate: now },
   });
+
+  // Check streak achievements
+  import('@/lib/achievementService')
+    .then(({ checkAchievements }) => checkAchievements(userId, { userId }).catch(console.error))
+    .catch(console.error);
 
   return { currentStreak: newStreak, longestStreak, xpAwarded, isNewDay: true };
 }

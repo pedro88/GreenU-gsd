@@ -616,30 +616,45 @@ export function GardenPageClient({
         onClose={() => setXpToast((t) => ({ ...t, visible: false }))}
       />
 
-      {/* Poll for XP changes — triggers toast when XP awarded */}
-      <XpPoller gardenId={gardenId} onXpChange={handleXpChange} />
+      {/* Poll for XP + achievement changes */}
+      <XpPoller
+        gardenId={gardenId}
+        onXpChange={handleXpChange}
+        onAchievementUnlock={(name, icon, xp) => {
+          setXpToast({
+            visible: true,
+            type: 'achievement',
+            achievementName: name,
+            achievementIcon: icon,
+            xp,
+          });
+        }}
+      />
     </div>
   );
 }
 
+interface XpPollerProps {
+  gardenId: string;
+  onXpChange: (xp: number, leveledUp: boolean, newLevel: number, prevLevel: number) => void;
+  onAchievementUnlock: (name: string, icon: string, xp: number) => void;
+}
+
 /**
- * Polls the game-stats API every 3 seconds while on the garden page
- * to detect XP changes from cultivation actions and trigger toasts.
- * @param props.gardenId - Garden ID (used to identify the session context)
+ * Polls game-stats and achievements APIs every 3 seconds while on the garden page
+ * to detect XP changes and new achievement unlocks, triggering toasts.
+ * @param props.gardenId - Garden ID (passed through for tracking)
  * @param root0
  * @param root0.gardenId
  * @param props.onXpChange - Callback fired when XP changes are detected
  * @param root0.onXpChange
- * @returns null (renders nothing)
+ * @param props.onAchievementUnlock - Callback fired when a new achievement unlocks
+ * @param root0.onAchievementUnlock
+ * @returns null
  */
-function XpPoller({
-  gardenId: _gardenId,
-  onXpChange,
-}: {
-  gardenId: string;
-  onXpChange: (xp: number, leveledUp: boolean, newLevel: number, prevLevel: number) => void;
-}) {
+function XpPoller({ gardenId: _gardenId, onXpChange, onAchievementUnlock }: XpPollerProps) {
   const [lastXp, setLastXp] = useState<number | null>(null);
+  const [lastAchievementCount, setLastAchievementCount] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -649,9 +664,10 @@ function XpPoller({
      */
     async function poll() {
       try {
-        const res = await fetch('/api/profile/game-stats');
-        if (res.ok) {
-          const data = await res.json();
+        // Poll XP
+        const statsRes = await fetch('/api/profile/game-stats');
+        if (statsRes.ok) {
+          const data = await statsRes.json();
           if (lastXp !== null && data.totalXp > lastXp) {
             const gained = data.totalXp - lastXp;
             const leveledUp = data.level > (lastXp > 0 ? Math.floor(Math.sqrt(lastXp / 100)) : 1);
@@ -659,6 +675,27 @@ function XpPoller({
             if (!cancelled) onXpChange(gained, leveledUp, data.level, prevLevel);
           }
           if (!cancelled) setLastXp(data.totalXp);
+        }
+
+        // Poll achievements
+        const achRes = await fetch('/api/achievements');
+        if (achRes.ok) {
+          const achievements = await achRes.json();
+          const unlockedCount = achievements.filter(
+            (a: { unlocked: boolean }) => a.unlocked
+          ).length;
+          if (lastAchievementCount !== null && unlockedCount > lastAchievementCount) {
+            // Find the newly unlocked achievement
+            const newOnes = achievements.filter(
+              (a: { unlocked: boolean; unlockedAt: string | null }) =>
+                a.unlocked && a.unlockedAt && Date.now() - new Date(a.unlockedAt).getTime() < 10000
+            );
+            if (newOnes.length > 0 && !cancelled) {
+              const newest = newOnes[newOnes.length - 1];
+              onAchievementUnlock(newest.name, newest.icon, newest.xpReward);
+            }
+          }
+          if (!cancelled) setLastAchievementCount(unlockedCount);
         }
       } catch {
         // ignore polling errors
@@ -672,7 +709,7 @@ function XpPoller({
       cancelled = true;
       clearInterval(interval);
     };
-  }, [lastXp, onXpChange]);
+  }, [lastXp, lastAchievementCount, onXpChange, onAchievementUnlock]);
 
   return null;
 }

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canReadGarden, canWriteGarden } from '@/lib/gardenAccess';
 import { addXpByEvent, updateStreak } from '@/lib/xpService';
+import { checkAchievements } from '@/lib/achievementService';
 
 /**
  * GET /api/crops/[id]
@@ -173,6 +174,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           metadata: { cropId: id },
         }).catch(console.error);
         updateStreak(garden.userId).catch(console.error);
+        checkAchievements(garden.userId, {
+          userId: garden.userId,
+          eventType: 'HARVEST',
+          eventDate: harvestedDate || undefined,
+        }).catch(console.error);
       }
     }
 

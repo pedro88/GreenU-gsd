@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { AchievementGrid } from '@/components/profile/AchievementGrid';
 
 interface UserProfile {
   id: string;
@@ -253,6 +254,9 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Achievement Grid */}
+      <AchievementGrid />
 
       {/* Profile Header */}
       <div className="pixel-card mb-8">

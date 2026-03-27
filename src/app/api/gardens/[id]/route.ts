@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { canReadGarden } from '@/lib/gardenAccess';
+import { checkAchievements } from '@/lib/achievementService';
 
 /**
  * GET /api/gardens/[id]
@@ -125,6 +126,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         },
       },
     });
+
+    // Check achievements when garden is made public (first share)
+    if (validation.data.isPublic === true && !existing.isPublic) {
+      checkAchievements(session.user.id, {
+        userId: session.user.id,
+      }).catch(console.error);
+    }
 
     return NextResponse.json(garden);
   } catch (error) {

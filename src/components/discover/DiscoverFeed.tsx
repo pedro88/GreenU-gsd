@@ -142,7 +142,7 @@ export function DiscoverFeed({
 
       {/* Results count */}
       {gardens.length > 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="pixel-label" style={{ color: '#302818' }}>
           {gardens.length} garden{gardens.length !== 1 ? 's' : ''} found
           {search && ` for "${search}"`}
           {filterCrop && ` with ${filterCrop}`}
@@ -151,10 +151,10 @@ export function DiscoverFeed({
 
       {/* Garden grid */}
       {gardens.length === 0 && !loading ? (
-        <div className="text-center py-16">
+        <div className="text-center py-16 font-pixel" style={{ color: '#302818' }}>
           <div className="text-4xl mb-3">🔍</div>
-          <h3 className="font-semibold text-gray-700 mb-1">No gardens found</h3>
-          <p className="text-sm text-gray-400">
+          <h3 className="font-bold text-lg mb-1">No gardens found</h3>
+          <p className="text-sm" style={{ color: '#2D8A2D' }}>
             {search || filterCrop
               ? 'Try adjusting your search or filter'
               : 'No public gardens yet — be the first to share!'}
@@ -176,11 +176,7 @@ export function DiscoverFeed({
           {/* Load more */}
           {hasMore && (
             <div className="flex justify-center pt-4">
-              <button
-                onClick={() => fetchGardens(false)}
-                disabled={loading}
-                className="px-6 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-              >
+              <button onClick={() => fetchGardens(false)} disabled={loading} className="btn-pixel">
                 {loading ? 'Loading...' : 'Load more'}
               </button>
             </div>
@@ -190,7 +186,10 @@ export function DiscoverFeed({
 
       {loading && gardens.length === 0 && (
         <div className="flex items-center justify-center py-16">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent" />
+          <div
+            className="h-8 w-8 animate-spin rounded-full border-4"
+            style={{ borderColor: '#FF5526', borderTopColor: 'transparent' }}
+          />
         </div>
       )}
     </div>

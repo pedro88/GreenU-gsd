@@ -43,11 +43,11 @@ export function TaskList({ tasks }: TaskListProps) {
   const sortedDates = Object.keys(grouped).sort();
 
   const taskColors: Record<string, string> = {
-    sow_indoors: 'bg-purple-100 text-purple-700 border-purple-200',
-    sow_outdoors: 'bg-green-100 text-green-700 border-green-200',
-    transplant: 'bg-teal-100 text-teal-700 border-teal-200',
-    harvest: 'bg-amber-100 text-amber-700 border-amber-200',
-    fertilize: 'bg-blue-100 text-blue-700 border-blue-200',
+    sow_indoors: 'pixel-badge',
+    sow_outdoors: 'pixel-badge-green',
+    transplant: 'pixel-badge',
+    harvest: 'pixel-badge-cream',
+    fertilize: 'pixel-badge',
   };
 
   const formatDate = (dateStr: string) => {

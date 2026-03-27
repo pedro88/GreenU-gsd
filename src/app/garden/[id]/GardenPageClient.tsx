@@ -120,8 +120,8 @@ export function GardenPageClient({
     }
   };
 
-  const handleViewCrop = (cropId: string) => {
-    console.log('View crop:', cropId);
+  const handleViewCrop = (_cropId: string) => {
+    // future: open crop detail dialog
   };
 
   // Fetch collaborators and invites when settings panel opens (owner only)
@@ -225,65 +225,67 @@ export function GardenPageClient({
       : `/gardens/${gardenId}`;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
+    <div className="min-h-screen">
+      {/* Header bar */}
+      <div className="retro-nav sticky top-14 z-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between h-12">
+            {/* Breadcrumb */}
             <div className="flex items-center gap-3">
               <Link
                 href="/profile"
-                className="text-gray-400 hover:text-gray-600 transition-colors text-sm"
+                className="font-pixel text-xs font-semibold text-ink-500 hover:text-ink-800 transition-colors tracking-wide"
               >
-                ← Back
+                ← BACK
               </Link>
-              <div className="h-5 w-px bg-gray-200" />
-              <h1 className="font-semibold text-gray-900">{gardenName}</h1>
-              {isPublic && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                  Public
-                </span>
-              )}
+              <span className="text-ink-300 font-pixel text-xs">◆</span>
+              <h1 className="font-pixel text-sm font-bold text-ink-900 tracking-wide">
+                {gardenName}
+              </h1>
+              {isPublic && <span className="pixel-badge pixel-badge-green">PUBLIC</span>}
               {!isOwner && role === 'viewer' && (
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
-                  Viewer
+                <span className="pixel-badge" style={{ background: '#E8DFD0', color: '#5C4B26' }}>
+                  VIEWER
                 </span>
               )}
               {!isOwner && role === 'editor' && (
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                  Editor
-                </span>
+                <span className="pixel-badge pixel-badge-cream">EDITOR</span>
               )}
             </div>
+
+            {/* Action buttons */}
             <div className="flex items-center gap-2">
               {(isOwner || role === 'editor') && (
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="font-pixel text-xs font-semibold px-3 py-1.5 border-[2px] border-ink-700 bg-cream-50 hover:bg-cream-100 transition-colors"
+                  style={{ boxShadow: '2px 2px 0px #302818' }}
                   title="Garden settings"
                 >
-                  ⚙️ Settings
+                  ⚙️ SETTINGS
                 </button>
               )}
               <Link
                 href={`/calendar/${gardenId}`}
-                className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="font-pixel text-xs font-semibold px-3 py-1.5 border-[2px] border-ink-700 bg-cream-50 hover:bg-cream-100 transition-colors"
+                style={{ boxShadow: '2px 2px 0px #302818' }}
               >
-                📅 Calendar
+                📅 CALENDAR
               </Link>
               <Link
                 href={`/analytics/${gardenId}`}
-                className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="font-pixel text-xs font-semibold px-3 py-1.5 border-[2px] border-ink-700 bg-cream-50 hover:bg-cream-100 transition-colors"
+                style={{ boxShadow: '2px 2px 0px #302818' }}
               >
-                📊 Analytics
+                📊 STATS
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Canvas */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Canvas area */}
+      <div className="max-w-6xl mx-auto px-4 py-6">
         {data ? (
           <GardenCanvas
             data={data}
@@ -307,29 +309,42 @@ export function GardenPageClient({
             onViewCrop={handleViewCrop}
           />
         ) : isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin h-8 w-8 border-4 border-green-500 border-t-transparent rounded-full" />
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <div className="font-pixel text-sm text-ink-500 tracking-widest animate-pulse">
+              LOADING GARDEN...
+            </div>
+            <div className="pixel-card-inset p-4 w-48 text-center font-pixel text-xs text-ink-400">
+              ████████░░░░░░░░
+            </div>
           </div>
         ) : (
-          <div className="text-center py-16 text-gray-500">Failed to load garden</div>
+          <div className="pixel-card p-8 text-center">
+            <p className="font-pixel text-sm text-ink-500">Failed to load garden</p>
+            <p className="font-pixel text-xs text-ink-300 mt-2">
+              Check your connection and try again
+            </p>
+          </div>
         )}
       </div>
 
       {/* Settings panel */}
       {showSettings && (
         <div
-          className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-ink-900/40 flex items-center justify-center z-50 p-4"
           onClick={() => setShowSettings(false)}
         >
           <div
-            className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+            className="retro-dialog rounded-lg p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Header */}
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-semibold text-gray-900">Garden Settings</h2>
+              <h2 className="font-pixel text-sm font-bold text-ink-900 tracking-wide uppercase">
+                ⚙ Garden Settings
+              </h2>
               <button
                 onClick={() => setShowSettings(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="font-pixel text-xs text-ink-500 hover:text-ink-800 transition-colors"
               >
                 ✕
               </button>
@@ -340,42 +355,38 @@ export function GardenPageClient({
               <div className="mb-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-gray-800 text-sm">Share publicly</div>
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      Make this garden visible to everyone on the discover page
+                    <div className="font-pixel text-xs font-bold text-ink-800">Share Publicly</div>
+                    <div className="font-body text-xs text-ink-400 mt-0.5 leading-relaxed">
+                      Make this garden visible on the discover page
                     </div>
                   </div>
                   <button
                     onClick={handleTogglePublic}
                     disabled={togglingPublic}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ml-3
-                      ${isPublic ? 'bg-green-500' : 'bg-gray-300'}`}
+                    className={`pixel-toggle ml-3 ${isPublic ? 'active' : ''}`}
                     role="switch"
                     aria-checked={isPublic}
                     aria-label="Toggle public visibility"
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform
-                        ${isPublic ? 'translate-x-6' : 'translate-x-1'}`}
-                    />
-                  </button>
+                  />
                 </div>
                 {isPublic && (
-                  <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="text-xs text-green-700 font-medium mb-1">Public link</div>
+                  <div className="mt-3 pixel-card-inset p-3">
+                    <div className="font-pixel text-[10px] font-bold text-ink-600 mb-1 tracking-widest">
+                      PUBLIC LINK
+                    </div>
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
                         readOnly
                         value={publicUrl}
-                        className="flex-1 text-xs bg-white border border-green-200 rounded px-2 py-1 text-gray-700 truncate"
+                        className="flex-1 pixel-input text-xs"
                         onClick={(e) => (e.target as HTMLInputElement).select()}
                       />
                       <button
                         onClick={() => navigator.clipboard.writeText(publicUrl)}
-                        className="text-xs text-green-700 font-medium hover:text-green-800 whitespace-nowrap"
+                        className="btn-pixel btn-pixel-sm btn-pixel-ghost"
                       >
-                        Copy
+                        COPY
                       </button>
                     </div>
                   </div>
@@ -385,21 +396,27 @@ export function GardenPageClient({
 
             {/* Collaborators — owner only */}
             {isOwner && (
-              <div className="border-t border-gray-100 pt-4">
-                <h3 className="font-semibold text-gray-900 text-sm mb-3">Collaborators</h3>
+              <div className="border-t-[2px] border-ink-300 pt-4">
+                <h3 className="font-pixel text-xs font-bold text-ink-800 mb-3 tracking-wide">
+                  COLLABORATORS
+                </h3>
 
                 {/* Pending invites */}
                 {pendingInvites.length > 0 && (
                   <div className="mb-3 space-y-2">
-                    <div className="text-xs text-gray-500 font-medium">Pending invites</div>
+                    <div className="font-pixel text-[10px] text-ink-400 font-bold tracking-widest">
+                      PENDING INVITES
+                    </div>
                     {pendingInvites.map((invite) => (
                       <div
                         key={invite.id}
-                        className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                        className="pixel-card-inset flex items-center justify-between px-3 py-2"
                       >
                         <div>
-                          <div className="text-xs font-medium text-gray-700">{invite.email}</div>
-                          <div className="text-xs text-gray-400">
+                          <div className="font-body text-xs font-semibold text-ink-800">
+                            {invite.email}
+                          </div>
+                          <div className="font-mono text-[10px] text-ink-400 mt-0.5">
                             {invite.role} · expires{' '}
                             {new Date(invite.expiresAt).toLocaleDateString()}
                           </div>
@@ -415,15 +432,20 @@ export function GardenPageClient({
                     {collaborators.map((collab) => (
                       <div key={collab.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
+                          <div
+                            className="w-7 h-7 flex items-center justify-center font-pixel text-xs font-bold border-[2px] border-ink-700"
+                            style={{ background: '#FFCC4D' }}
+                          >
                             {collab.user.name?.[0]?.toUpperCase() ??
                               collab.user.email[0].toUpperCase()}
                           </div>
                           <div>
-                            <div className="text-xs font-medium text-gray-700">
+                            <div className="font-body text-xs font-semibold text-ink-800">
                               {collab.user.name || collab.user.email}
                             </div>
-                            <div className="text-xs text-gray-400">{collab.user.email}</div>
+                            <div className="font-body text-[10px] text-ink-400">
+                              {collab.user.email}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -436,7 +458,7 @@ export function GardenPageClient({
                               )
                             }
                             disabled={changingRole === collab.user.id}
-                            className="text-xs border border-gray-200 rounded px-2 py-1 text-gray-600 bg-white"
+                            className="pixel-input text-xs py-1 w-20"
                           >
                             <option value="EDITOR">Editor</option>
                             <option value="VIEWER">Viewer</option>
@@ -444,7 +466,7 @@ export function GardenPageClient({
                           <button
                             onClick={() => handleRemoveCollaborator(collab.user.id)}
                             disabled={removingCollaborator === collab.user.id}
-                            className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                            className="font-pixel text-xs text-ink-400 hover:text-terracotta-600 transition-colors px-1"
                           >
                             ✕
                           </button>
@@ -455,50 +477,62 @@ export function GardenPageClient({
                 )}
 
                 {/* Invite form */}
-                <form onSubmit={handleInvite} className="flex gap-2">
+                <form onSubmit={handleInvite} className="flex flex-col gap-2">
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="colleague@email.com"
-                    className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-green-500"
+                    className="pixel-input text-sm"
                   />
-                  <select
-                    value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as 'EDITOR' | 'VIEWER')}
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-2 text-gray-600 bg-white"
-                  >
-                    <option value="EDITOR">Editor</option>
-                    <option value="VIEWER">Viewer</option>
-                  </select>
-                  <button
-                    type="submit"
-                    disabled={sendingInvite || !inviteEmail.trim()}
-                    className="text-sm bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-500 disabled:opacity-50 transition-colors"
-                  >
-                    {sendingInvite ? '...' : 'Invite'}
-                  </button>
+                  <div className="flex gap-2">
+                    <select
+                      value={inviteRole}
+                      onChange={(e) => setInviteRole(e.target.value as 'EDITOR' | 'VIEWER')}
+                      className="pixel-input text-xs py-2 flex-1"
+                    >
+                      <option value="EDITOR">Editor</option>
+                      <option value="VIEWER">Viewer</option>
+                    </select>
+                    <button
+                      type="submit"
+                      disabled={sendingInvite || !inviteEmail.trim()}
+                      className="btn-pixel btn-pixel-secondary btn-pixel-sm"
+                    >
+                      {sendingInvite ? '...' : 'INVITE'}
+                    </button>
+                  </div>
                 </form>
                 {inviteSuccess && (
-                  <div className="mt-2 text-xs text-green-600">{inviteSuccess}</div>
+                  <div className="mt-2 font-pixel text-xs text-forest-600 font-bold tracking-wide">
+                    ✓ {inviteSuccess}
+                  </div>
                 )}
-                {inviteError && <div className="mt-2 text-xs text-red-500">{inviteError}</div>}
+                {inviteError && (
+                  <div className="mt-2 font-pixel text-xs text-terracotta-700 font-bold tracking-wide">
+                    ⚠ {inviteError}
+                  </div>
+                )}
               </div>
             )}
 
             {/* Role info — non-owner */}
             {!isOwner && (
-              <div className="border-t border-gray-100 pt-4">
-                <div className="text-sm text-gray-600">
-                  You are an <span className="font-medium capitalize">{role}</span> of this garden.
+              <div className="border-t-[2px] border-ink-300 pt-4">
+                <div className="font-body text-sm text-ink-600">
+                  You are an{' '}
+                  <span className="font-pixel font-bold text-terracotta-600 uppercase tracking-wide">
+                    {role}
+                  </span>{' '}
+                  of this garden.
                 </div>
                 {role === 'viewer' && (
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="font-body text-xs text-ink-400 mt-1">
                     Viewers have read-only access. Contact the owner to request edit access.
                   </div>
                 )}
                 {role === 'editor' && (
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="font-body text-xs text-ink-400 mt-1">
                     Editors can add zones, plots, and crops. Only the owner can manage collaborators
                     or delete the garden.
                   </div>
@@ -506,12 +540,10 @@ export function GardenPageClient({
               </div>
             )}
 
-            <div className="flex justify-end pt-4 border-t border-gray-100 mt-4">
-              <button
-                onClick={() => setShowSettings(false)}
-                className="px-4 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Done
+            {/* Done button */}
+            <div className="flex justify-end pt-4 border-t-[2px] border-ink-300 mt-4">
+              <button onClick={() => setShowSettings(false)} className="btn-pixel btn-pixel-sm">
+                DONE ✓
               </button>
             </div>
           </div>

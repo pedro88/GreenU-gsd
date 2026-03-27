@@ -23,35 +23,14 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
     <div className="space-y-6">
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Total planted"
-          value={summary.totalPlanted}
-          icon="🌱"
-          color="bg-green-50 text-green-700"
-        />
-        <StatCard
-          label="Harvested"
-          value={summary.totalHarvested}
-          icon="🍽️"
-          color="bg-amber-50 text-amber-700"
-        />
-        <StatCard
-          label="Active crops"
-          value={summary.activeCrops}
-          icon="🪴"
-          color="bg-blue-50 text-blue-700"
-        />
+        <StatCard label="Total planted" value={summary.totalPlanted} icon="🌱" color="stat-card" />
+        <StatCard label="Harvested" value={summary.totalHarvested} icon="🍽️" color="stat-card" />
+        <StatCard label="Active crops" value={summary.activeCrops} icon="🪴" color="stat-card" />
         <StatCard
           label="Success rate"
           value={`${summary.successRate}%`}
           icon="📈"
-          color={
-            summary.successRate >= 70
-              ? 'bg-green-50 text-green-700'
-              : summary.successRate >= 40
-                ? 'bg-amber-50 text-amber-700'
-                : 'bg-red-50 text-red-700'
-          }
+          color="stat-card"
           subtitle={summary.totalFailed > 0 ? `${summary.totalFailed} failed` : undefined}
         />
       </div>
@@ -59,28 +38,28 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Yield by crop */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-900 mb-4">Yield by crop</h3>
+        <div className="chart-container">
+          <h3 className="pixel-heading">Yield by crop</h3>
           <HarvestChart data={topCrops} />
         </div>
 
         {/* Crops by family */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-900 mb-4">Crops by family</h3>
+        <div className="chart-container">
+          <h3 className="pixel-heading">Crops by family</h3>
           <CropFamilyChart data={cropsByFamily} />
         </div>
 
         {/* Monthly activity — full width */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 lg:col-span-2">
-          <h3 className="font-semibold text-gray-900 mb-4">Monthly harvest activity</h3>
+        <div className="chart-container lg:col-span-2">
+          <h3 className="pixel-heading">Monthly harvest activity</h3>
           <MonthlyActivityChart data={monthlyActivity} />
         </div>
       </div>
 
       {/* Zone breakdown */}
       {zones.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-900 mb-4">By zone</h3>
+        <div className="pixel-card">
+          <h3 className="pixel-heading">By zone</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -130,20 +109,20 @@ interface StatCardProps {
  * @param props.label - Short uppercase label for the stat metric
  * @param props.value - The numeric or string metric value to display prominently
  * @param props.icon - Emoji icon displayed alongside the label
- * @param props.color - Tailwind CSS classes for the card background and text color
+ * @param props._color - Tailwind CSS classes for the card background and text color (reserved for future use)
  * @param props.subtitle - Optional secondary text shown below the value
  * @returns The rendered stat card element
  */
-function StatCard({ label, value, icon, color, subtitle }: StatCardProps) {
+function StatCard({ label, value, icon, _color, subtitle }: StatCardProps) {
   return (
-    <div className={`rounded-xl p-4 ${color}`}>
+    <div className={`stat-card`}>
       <div className="flex items-center gap-2 mb-1">
         <span className="text-lg" aria-hidden>
           {icon}
         </span>
-        <span className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</span>
+        <span className="pixel-label">{label}</span>
       </div>
-      <div className="text-2xl font-bold">{value}</div>
+      <div className="pixel-heading-lg">{value}</div>
       {subtitle && <div className="text-xs mt-0.5 opacity-70">{subtitle}</div>}
     </div>
   );

@@ -86,7 +86,6 @@ export function SignUpForm() {
           label="Password"
           type="password"
           autoComplete="new-password"
-          helperText="At least 8 characters"
           error={errors.password?.message}
           {...register('password')}
         />

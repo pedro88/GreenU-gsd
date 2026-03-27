@@ -133,11 +133,18 @@ export function CalendarView({
       </div>
 
       {/* Calendar grid */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="pixel-card overflow-hidden">
         {/* Day headers */}
-        <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+        <div
+          className="grid grid-cols-7"
+          style={{ backgroundColor: '#302818', borderBottom: '2px solid #302818' }}
+        >
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-            <div key={d} className="text-center py-2 text-xs font-medium text-gray-500">
+            <div
+              key={d}
+              className="text-center py-2 text-xs font-bold"
+              style={{ color: '#FFCC4D' }}
+            >
               {d}
             </div>
           ))}

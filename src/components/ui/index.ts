@@ -1,2 +1,2 @@
 export { Button } from './Button';
-export { Input } from './Input';
+export { Input, Textarea, Select } from './Input';

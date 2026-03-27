@@ -15,7 +15,10 @@ interface HarvestChartProps {
 export function HarvestChart({ data }: HarvestChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+      <div
+        className="flex items-center justify-center h-48 text-sm font-pixel"
+        style={{ color: '#302818' }}
+      >
         No harvest data yet
       </div>
     );
@@ -24,11 +27,19 @@ export function HarvestChart({ data }: HarvestChartProps) {
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={data} layout="vertical" margin={{ left: 60, right: 16 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-        <XAxis type="number" tick={{ fontSize: 11, fill: '#6b7280' }} />
-        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#374151' }} width={60} />
-        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        <Bar dataKey="totalYield" fill="#16a34a" radius={[0, 4, 4, 0]} barSize={20} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#302818" strokeOpacity={0.2} />
+        <XAxis type="number" tick={{ fontSize: 11, fill: '#302818' }} />
+        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#302818' }} width={60} />
+        <Tooltip
+          contentStyle={{
+            fontSize: 12,
+            borderRadius: 4,
+            border: '2px solid #302818',
+            backgroundColor: '#FFF8E7',
+            fontFamily: 'monospace',
+          }}
+        />
+        <Bar dataKey="totalYield" fill="#2D8A2D" radius={[0, 4, 4, 0]} barSize={20} />
       </BarChart>
     </ResponsiveContainer>
   );

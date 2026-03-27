@@ -1,82 +1,86 @@
-import { forwardRef, InputHTMLAttributes, useState } from 'react';
+import React from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
-  helperText?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', label, error, helperText, type, id, ...props }, ref) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const isPassword = type === 'password';
-    const inputId = id || label?.toLowerCase().replace(/\s/g, '-');
+/**
+ * Retro pixel-style text input with inset shadow and chunky border.
+ * @param root0 - destructured props
+ * @param root0.label - Label text displayed above the input
+ * @param root0.error - Error message displayed below the input
+ * @param root0.className - Additional CSS classes
+ * @returns The retro input JSX
+ */
+export function Input({ label, error, className = '', ...props }: InputProps) {
+  return (
+    <div className="w-full">
+      {label && <label className="pixel-label">{label}</label>}
+      <input {...props} className={`pixel-input ${className}`} />
+      {error && (
+        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
-    return (
-      <div className="w-full">
-        {label && (
-          <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
-        <div className="relative">
-          <input
-            ref={ref}
-            id={inputId}
-            type={isPassword && showPassword ? 'text' : type}
-            className={`
-              block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset 
-              placeholder:text-gray-400 
-              focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600 
-              disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500
-              ${error ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300'}
-              ${isPassword ? 'pr-12' : ''}
-              ${className}
-            `}
-            {...props}
-          />
-          {isPassword && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              tabIndex={-1}
-            >
-              {showPassword ? (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                  />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              )}
-            </button>
-          )}
-        </div>
-        {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
-        {helperText && !error && <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>}
-      </div>
-    );
-  }
-);
+/**
+ * Retro pixel-style textarea with inset shadow and chunky border.
+ * @param root0 - destructured props
+ * @param root0.label - Label text displayed above the textarea
+ * @param root0.error - Error message displayed below
+ * @param root0.className - Additional CSS classes
+ * @returns The retro textarea JSX
+ */
+export function Textarea({
+  label,
+  error,
+  className = '',
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }) {
+  return (
+    <div className="w-full">
+      {label && <label className="pixel-label">{label}</label>}
+      <textarea {...props} className={`pixel-input resize-none min-h-[80px] ${className}`} />
+      {error && (
+        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
-Input.displayName = 'Input';
-
-export { Input };
+/**
+ * Retro pixel-style select dropdown with inset shadow and chunky border.
+ * @param root0 - destructured props
+ * @param root0.label - Label text displayed above the select
+ * @param root0.error - Error message displayed below
+ * @param root0.className - Additional CSS classes
+ * @param root0.children - Select options
+ * @returns The retro select JSX
+ */
+export function Select({
+  label,
+  error,
+  className = '',
+  children,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string }) {
+  return (
+    <div className="w-full">
+      {label && <label className="pixel-label">{label}</label>}
+      <select {...props} className={`pixel-input cursor-pointer ${className}`}>
+        {children}
+      </select>
+      {error && (
+        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}

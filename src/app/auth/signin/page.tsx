@@ -5,28 +5,10 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const OAuthButton = ({
-  provider,
-  icon,
-  label,
-}: {
-  provider: string;
-  icon: string;
-  label: string;
-}) => (
-  <button
-    type="button"
-    onClick={() => signIn(provider, { callbackUrl: '/' })}
-    className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-  >
-    <span className="text-xl">{icon}</span>
-    {label}
-  </button>
-);
-
 /**
- * Sign-in page for authenticating users with credentials or OAuth providers.
- * @returns The sign-in page JSX
+ * Sign-in page with retro Sega/SNES-era pixel styling.
+ * Features chunky borders, warm earth tones, and gaming UI elements.
+ * @returns The retro sign-in page JSX
  */
 export default function SignInPage() {
   const router = useRouter();
@@ -52,55 +34,61 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError('Invalid email or password — check your credentials!');
       } else {
         router.push('/');
         router.refresh();
       }
     } catch {
-      setError('An error occurred. Please try again.');
+      setError('Connection failed! Try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h1 className="text-center text-3xl font-bold text-gray-900">Sign in to greenU</h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link href="/auth/signup" className="font-medium text-green-600 hover:text-green-500">
-              create a new account
-            </Link>
+    <div
+      className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center px-4 py-12"
+      style={{
+        backgroundImage: 'radial-gradient(circle, #D4C5A9 1px, transparent 1px)',
+        backgroundSize: '24px 24px',
+      }}
+    >
+      {/* Decorative corner pixels */}
+      <div className="absolute top-4 left-4 text-4xl opacity-20 font-pixel">🌱</div>
+      <div className="absolute top-4 right-4 text-4xl opacity-20 font-pixel">🌱</div>
+
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h1 className="pixel-heading-lg mb-2">PLAYER SIGN IN</h1>
+          <p className="font-pixel text-xs text-ink-500 tracking-widest uppercase">
+            Enter your credentials to continue
           </p>
         </div>
 
-        {/* OAuth Buttons */}
-        <div className="space-y-3">
-          <OAuthButton provider="google" icon="🔵" label="Continue with Google" />
-          <OAuthButton provider="github" icon="🐙" label="Continue with GitHub" />
-          <OAuthButton provider="apple" icon="🍎" label="Continue with Apple" />
-        </div>
-
-        {/* Divider */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+        {/* Main card */}
+        <div className="retro-dialog rounded-lg p-6 space-y-5">
+          {/* ASCII-style top border decoration */}
+          <div className="font-mono text-xs text-ink-400 tracking-tight overflow-hidden whitespace-nowrap">
+            ╔══════════════════════════════════════╗
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-gray-50 px-2 text-gray-500">Or continue with email</span>
-          </div>
-        </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">{error}</div>}
+          {/* Error */}
+          {error && (
+            <div
+              className="bg-terracotta-50 border-[2px] border-terracotta-700 px-4 py-2 font-pixel text-xs text-terracotta-800 font-semibold tracking-wide"
+              style={{ boxShadow: '2px 2px 0px #CC3310' }}
+            >
+              ⚠ {error}
+            </div>
+          )}
 
-          <div className="space-y-4 rounded-md shadow-sm">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+              <label htmlFor="email" className="pixel-label">
+                👤 EMAIL
               </label>
               <input
                 id="email"
@@ -110,14 +98,14 @@ export default function SignInPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative block w-full rounded-md border-0 p-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600"
-                placeholder="Email address"
+                placeholder="your@email.com"
+                className="pixel-input"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
+              <label htmlFor="password" className="pixel-label">
+                🔑 PASSWORD
               </label>
               <input
                 id="password"
@@ -127,22 +115,43 @@ export default function SignInPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full rounded-md border-0 p-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600"
-                placeholder="Password"
+                placeholder="••••••••"
+                className="pixel-input"
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex w-full justify-center rounded-md bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-50"
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-pixel btn-pixel-primary w-full text-center"
+            >
+              {loading ? '▶ CONNECTING...' : '▶ START GAME'}
+            </button>
+          </form>
 
-          <div className="text-center text-sm text-gray-500">Password minimum 8 characters</div>
-        </form>
+          {/* Divider */}
+          <div className="pixel-divider" />
+
+          {/* Sign up link */}
+          <p className="text-center font-body text-sm text-ink-600">
+            No account yet?{' '}
+            <Link
+              href="/auth/signup"
+              className="font-pixel text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline underline-offset-2"
+            >
+              CREATE CHARACTER →
+            </Link>
+          </p>
+        </div>
+
+        {/* Bottom decoration */}
+        <div className="mt-4 flex justify-center gap-2 opacity-40">
+          {['🌱', '🌿', '🌾', '🍅', '🥕'].map((emoji) => (
+            <span key={emoji} className="text-lg">
+              {emoji}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -63,21 +63,26 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
   return (
     <Link
       href={`/gardens/${garden.id}`}
-      className="block bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all group"
+      className="block pixel-card hover:shadow-lg transition-all group"
     >
       {/* Header */}
-      <div className="p-4 pb-3 border-b border-gray-100">
+      <div className="p-4 pb-3 border-b" style={{ borderColor: '#302818' }}>
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 truncate group-hover:text-green-700 transition-colors">
+            <h3
+              className="font-bold font-pixel truncate group-hover:text-green-600 transition-colors"
+              style={{ color: '#302818' }}
+            >
               {garden.name}
             </h3>
             {garden.location && (
-              <p className="text-xs text-gray-400 mt-0.5 truncate">{garden.location}</p>
+              <p className="pixel-label mt-0.5 truncate" style={{ color: '#302818' }}>
+                {garden.location}
+              </p>
             )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <div className="text-xs text-gray-400 flex items-center gap-1">
+            <div className="pixel-badge-green font-pixel text-xs flex items-center gap-1">
               <span>👥</span>
               <span>{garden.followerCount}</span>
             </div>
@@ -85,12 +90,8 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
               <button
                 onClick={handleFollow}
                 disabled={loading}
-                className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors
-                  ${
-                    following
-                      ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      : 'bg-green-600 text-white hover:bg-green-500'
-                  } disabled:opacity-50`}
+                className={`btn-pixel-sm
+                  ${following ? 'btn-pixel-secondary' : 'btn-pixel-primary'}`}
               >
                 {loading ? '...' : following ? 'Following' : '+ Follow'}
               </button>
@@ -100,11 +101,19 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
       </div>
 
       {/* Owner row */}
-      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-200 text-[10px] font-bold text-green-800">
+      <div
+        className="px-4 py-2 border-b flex items-center gap-2"
+        style={{ backgroundColor: '#302818', borderColor: '#302818' }}
+      >
+        <div
+          className="flex h-5 w-5 items-center justify-center rounded-full font-bold text-[10px] font-pixel"
+          style={{ backgroundColor: '#FFCC4D', color: '#302818' }}
+        >
           {ownerInitials}
         </div>
-        <span className="text-xs text-gray-600">{garden.owner.name || 'Gardener'}</span>
+        <span className="pixel-label" style={{ color: '#FFF8E7' }}>
+          {garden.owner.name || 'Gardener'}
+        </span>
       </div>
 
       {/* Zones + crops */}
@@ -114,13 +123,15 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
           {garden.zones.slice(0, 4).map((zone) => (
             <span
               key={zone.id}
-              className={`text-xs px-2 py-0.5 rounded-full font-medium ${zoneTypeColors[zone.type] ?? 'bg-gray-100 text-gray-700'}`}
+              className={`text-xs px-2 py-0.5 rounded font-pixel ${zoneTypeColors[zone.type] ?? 'pixel-badge'}`}
             >
               {zone.name}
             </span>
           ))}
           {garden.zones.length > 4 && (
-            <span className="text-xs text-gray-400 px-1">+{garden.zones.length - 4}</span>
+            <span className="text-xs px-1 font-pixel" style={{ color: '#302818' }}>
+              +{garden.zones.length - 4}
+            </span>
           )}
         </div>
 
@@ -128,16 +139,20 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
         {garden.topCrops.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {garden.topCrops.map((crop) => (
-              <span key={crop} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+              <span key={crop} className="crop-pill">
                 {crop}
               </span>
             ))}
             {garden.cropCount > 5 && (
-              <span className="text-xs text-gray-400 px-1">+{garden.cropCount - 5}</span>
+              <span className="text-xs px-1 font-pixel" style={{ color: '#302818' }}>
+                +{garden.cropCount - 5}
+              </span>
             )}
           </div>
         ) : (
-          <p className="text-xs text-gray-400 italic">No crops yet</p>
+          <p className="text-xs italic font-pixel" style={{ color: '#302818' }}>
+            No crops yet
+          </p>
         )}
       </div>
     </Link>

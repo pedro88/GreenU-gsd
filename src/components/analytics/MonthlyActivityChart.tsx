@@ -23,7 +23,10 @@ interface MonthlyActivityChartProps {
 export function MonthlyActivityChart({ data }: MonthlyActivityChartProps) {
   if (data.every((d) => d.harvests === 0)) {
     return (
-      <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+      <div
+        className="flex items-center justify-center h-48 text-sm font-pixel"
+        style={{ color: '#302818' }}
+      >
         No harvest activity recorded yet
       </div>
     );
@@ -32,19 +35,25 @@ export function MonthlyActivityChart({ data }: MonthlyActivityChartProps) {
   return (
     <ResponsiveContainer width="100%" height={200}>
       <LineChart data={data} margin={{ left: 16, right: 16 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-        <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#6b7280' }} interval={1} />
-        <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} allowDecimals={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#302818" strokeOpacity={0.2} />
+        <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#302818' }} interval={1} />
+        <YAxis tick={{ fontSize: 11, fill: '#302818' }} allowDecimals={false} />
         <Tooltip
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+          contentStyle={{
+            fontSize: 12,
+            borderRadius: 4,
+            border: '2px solid #302818',
+            backgroundColor: '#FFF8E7',
+            fontFamily: 'monospace',
+          }}
           formatter={(value) => [`${value} harvests`, 'Activity']}
         />
         <Line
           type="monotone"
           dataKey="harvests"
-          stroke="#16a34a"
+          stroke="#FF5526"
           strokeWidth={2}
-          dot={{ fill: '#16a34a', r: 3 }}
+          dot={{ fill: '#FF5526', r: 3 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

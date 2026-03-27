@@ -53,26 +53,27 @@ export function AddZoneDialog({ open, onClose, onSubmit }: AddZoneDialogProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+        className="retro-dialog bg-cream-50 border-4 border-ink-900 p-6 max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-semibold text-gray-900 mb-4">Add new zone</h2>
+        <h2 className="pixel-heading text-ink-900 mb-4">Add new zone</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Zone name</label>
+            <label className="pixel-label">Zone name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Raised bed 1, Greenhouse A"
+              className="pixel-input"
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Zone type</label>
+            <label className="pixel-label">Zone type</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="pixel-input w-full"
             >
               <option value="OUTDOOR">🌱 Outdoor</option>
               <option value="GREENHOUSE">🏠 Greenhouse</option>
@@ -81,12 +82,18 @@ export function AddZoneDialog({ open, onClose, onSubmit }: AddZoneDialogProps) {
               <option value="TERRACE">🌿 Terrace</option>
             </select>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-terracotta-600 font-pixel">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={loading}
+              className="btn-pixel btn-pixel-ghost"
+            >
               Cancel
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" loading={loading} className="btn-pixel btn-pixel-primary">
               Create zone
             </Button>
           </div>
@@ -153,25 +160,24 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+        className="retro-dialog bg-cream-50 border-4 border-ink-900 p-6 max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-semibold text-gray-900 mb-1">Add plot to {zoneName}</h2>
-        <p className="text-sm text-gray-500 mb-4">Plot will appear inside this zone</p>
+        <h2 className="pixel-heading text-ink-900 mb-1">Add plot to {zoneName}</h2>
+        <p className="text-sm text-ink-500 mb-4 font-pixel">Plot will appear inside this zone</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plot name</label>
+            <label className="pixel-label">Plot name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Row 1, Bed A1"
+              className="pixel-input"
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Size (sq ft, optional)
-            </label>
+            <label className="pixel-label">Size (sq ft, optional)</label>
             <Input
               type="number"
               value={sizeSqFt}
@@ -179,16 +185,15 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
               placeholder="e.g., 16"
               min="0"
               step="0.5"
+              className="pixel-input"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Soil type (optional)
-            </label>
+            <label className="pixel-label">Soil type (optional)</label>
             <select
               value={soilType}
               onChange={(e) => setSoilType(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="pixel-input w-full"
             >
               <option value="">Select soil type</option>
               <option value="clay">Clay</option>
@@ -199,12 +204,18 @@ export function AddPlotDialog({ open, zoneName, onClose, onSubmit }: AddPlotDial
               <option value="chalky">Chalky</option>
             </select>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-terracotta-600 font-pixel">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={loading}
+              className="btn-pixel btn-pixel-ghost"
+            >
               Cancel
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" loading={loading} className="btn-pixel btn-pixel-primary">
               Create plot
             </Button>
           </div>
@@ -282,18 +293,18 @@ export function AddCropDialog({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+        className="retro-dialog bg-cream-50 border-4 border-ink-900 p-6 max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-semibold text-gray-900 mb-1">Plant in {plotName}</h2>
-        <p className="text-sm text-gray-500 mb-4">Select a plant to grow in this plot</p>
+        <h2 className="pixel-heading text-ink-900 mb-1">Plant in {plotName}</h2>
+        <p className="text-sm text-ink-500 mb-4 font-pixel">Select a plant to grow in this plot</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plant type</label>
+            <label className="pixel-label">Plant type</label>
             <select
               value={plantTypeId}
               onChange={(e) => setPlantTypeId(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="pixel-input w-full"
               autoFocus
             >
               <option value="">Select plant...</option>
@@ -305,31 +316,37 @@ export function AddCropDialog({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Planting date</label>
+            <label className="pixel-label">Planting date</label>
             <Input
               type="date"
               value={plantedDate}
               onChange={(e) => setPlantedDate(e.target.value)}
+              className="pixel-input"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Quantity (optional)
-            </label>
+            <label className="pixel-label">Quantity (optional)</label>
             <Input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="Number of plants"
               min="1"
+              className="pixel-input"
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-terracotta-600 font-pixel">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={loading}
+              className="btn-pixel btn-pixel-ghost"
+            >
               Cancel
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" loading={loading} className="btn-pixel btn-pixel-primary">
               Plant
             </Button>
           </div>

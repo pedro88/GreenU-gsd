@@ -11,14 +11,12 @@ const languages = [
 ];
 
 /**
- * Language selector dropdown allowing users to change their preferred language.
+ * Retro pixel-style language selector dropdown.
  * Persists the selection to the user profile via the API.
  * @returns The language selector dropdown JSX
  */
 export function LanguageSelector() {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('en');
 
@@ -28,7 +26,6 @@ export function LanguageSelector() {
     setIsOpen(false);
 
     startTransition(() => {
-      // Update user preference in database
       fetch('/api/user/language', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,10 +34,6 @@ export function LanguageSelector() {
     });
   };
 
-  // Currently unused but intentionally declared — available for future locale-based routing
-  void router;
-  void pathname;
-
   const currentLanguage = languages.find((l) => l.code === currentLang) || languages[0];
 
   return (
@@ -48,31 +41,33 @@ export function LanguageSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isPending}
-        className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+        className="flex items-center gap-2 font-pixel text-xs font-semibold px-3 py-1.5 border-[2px] border-ink-700 bg-cream-50 hover:bg-cream-100 disabled:opacity-50 transition-colors"
+        style={{ boxShadow: '2px 2px 0px #302818' }}
       >
         <span>{currentLanguage.flag}</span>
-        <span>{currentLanguage.name}</span>
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <span className="text-ink-700">{currentLanguage.code.toUpperCase()}</span>
+        <span className="text-ink-400">{isOpen ? '▲' : '▼'}</span>
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 z-20 mt-2 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+          <div
+            className="absolute right-0 z-20 mt-2 w-44 retro-dialog"
+            style={{ boxShadow: '5px 5px 0px #302818' }}
+          >
             <div className="py-1">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => handleLanguageChange(lang.code)}
-                  className={`flex w-full items-center gap-2 px-4 py-2 text-sm ${
+                  className={`flex w-full items-center gap-3 px-4 py-2.5 font-body text-sm font-medium transition-colors ${
                     lang.code === currentLang
-                      ? 'bg-green-50 text-green-700'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-FFCC4D text-ink-900'
+                      : 'text-ink-700 hover:bg-cream-200'
                   }`}
                 >
-                  <span>{lang.flag}</span>
+                  <span className="text-base">{lang.flag}</span>
                   <span>{lang.name}</span>
                 </button>
               ))}
@@ -83,3 +78,9 @@ export function LanguageSelector() {
     </div>
   );
 }
+
+// Intentionally unused — reserved for future locale-based routing via next-intl
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+void (useRouter as any);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+void (usePathname as any);

@@ -57,23 +57,25 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
 
   return (
     <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50"
+      style={{ backgroundColor: 'rgba(48, 40, 24, 0.7)' }}
       onClick={onClose}
     >
-      <div
-        className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="retro-dialog max-w-md w-full" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-semibold text-gray-900">New conversation</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <h2 className="pixel-heading">New conversation</h2>
+          <button
+            onClick={onClose}
+            className="font-bold font-pixel text-lg"
+            style={{ color: '#302818' }}
+          >
             ✕
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="pixel-label block mb-1" style={{ color: '#302818' }}>
               Recipient email
             </label>
             <input
@@ -82,14 +84,21 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
               placeholder="gardener@email.com"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+              className="pixel-input w-full"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="gardenId" className="block text-sm font-medium text-gray-700 mb-1">
-              Garden link <span className="text-gray-400 font-normal">(optional)</span>
+            <label
+              htmlFor="gardenId"
+              className="pixel-label block mb-1"
+              style={{ color: '#302818' }}
+            >
+              Garden link{' '}
+              <span className="font-normal" style={{ color: '#302818' }}>
+                (optional)
+              </span>
             </label>
             <input
               id="gardenId"
@@ -97,12 +106,16 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
               value={gardenId}
               onChange={(e) => setGardenId(e.target.value)}
               placeholder="Garden ID (optional)"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+              className="pixel-input w-full"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="message"
+              className="pixel-label block mb-1"
+              style={{ color: '#302818' }}
+            >
               Message
             </label>
             <textarea
@@ -111,25 +124,29 @@ export function NewMessageDialog({ onClose, onCreated }: NewMessageDialogProps) 
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Start your message..."
               rows={4}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none"
+              className="pixel-input w-full resize-none"
               required
             />
           </div>
 
-          {error && <div className="text-xs text-red-500">{error}</div>}
+          {error && (
+            <div className="text-xs font-pixel" style={{ color: '#FF5526' }}>
+              {error}
+            </div>
+          )}
 
           <div className="flex gap-3 justify-end pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="btn-pixel-ghost px-4 py-2 text-sm font-bold font-pixel"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !recipientEmail.trim() || !message.trim()}
-              className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-500 disabled:opacity-50 transition-colors"
+              className="btn-pixel-primary px-4 py-2 text-sm font-bold font-pixel"
             >
               {loading ? 'Sending...' : 'Send'}
             </button>

@@ -273,17 +273,21 @@ export function MessageThread({ conversationId, currentUserId }: MessageThreadPr
           }}
           placeholder="Write a message..."
           rows={2}
-          className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-green-500 resize-none"
+          className="flex-1 pixel-input px-4 py-2.5 text-sm resize-none"
         />
         <button
           type="submit"
           disabled={sending || !newMessage.trim()}
-          className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-500 disabled:opacity-50 transition-colors text-sm font-medium self-end"
+          className="btn-pixel-primary px-4 py-2 self-end font-bold font-pixel"
         >
           {sending ? '...' : 'Send'}
         </button>
       </form>
-      {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
+      {error && (
+        <div className="text-xs font-pixel mt-1" style={{ color: '#FF5526' }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }

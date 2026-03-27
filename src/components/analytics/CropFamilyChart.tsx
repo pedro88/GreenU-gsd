@@ -26,7 +26,10 @@ export function CropFamilyChart({ data }: CropFamilyChartProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+      <div
+        className="flex items-center justify-center h-48 text-sm font-pixel"
+        style={{ color: '#302818' }}
+      >
         No crops planted yet
       </div>
     );
@@ -50,12 +53,18 @@ export function CropFamilyChart({ data }: CropFamilyChartProps) {
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+          contentStyle={{
+            fontSize: 12,
+            borderRadius: 4,
+            border: '2px solid #302818',
+            backgroundColor: '#FFF8E7',
+            fontFamily: 'monospace',
+          }}
           formatter={(value, name) => [`${value} crops`, name as string]}
         />
         <Legend
-          wrapperStyle={{ fontSize: 11 }}
-          formatter={(value: string) => <span style={{ color: '#374151' }}>{value}</span>}
+          wrapperStyle={{ fontSize: 11, fontFamily: 'monospace' }}
+          formatter={(value: string) => <span style={{ color: '#302818' }}>{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

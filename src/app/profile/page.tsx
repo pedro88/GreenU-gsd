@@ -122,7 +122,10 @@ export default function ProfilePage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-600 border-t-transparent" />
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-4"
+          style={{ borderColor: '#FF5526', borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
@@ -144,44 +147,60 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+        <h1 className="pixel-heading-lg" style={{ color: '#302818' }}>
+          Profile
+        </h1>
         <button
           onClick={handleSignOut}
-          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50"
+          className="btn-pixel-secondary px-4 py-2 text-sm font-bold font-pixel"
         >
           Sign Out
         </button>
       </div>
 
       {/* Profile Header */}
-      <div className="mb-8 rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
+      <div className="pixel-card mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-600 text-xl font-bold text-white">
+            <div
+              className="flex h-16 w-16 items-center justify-center rounded-full font-bold text-xl font-pixel"
+              style={{ backgroundColor: '#FF5526', color: '#FFF8E7' }}
+            >
               {initials}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="pixel-heading" style={{ color: '#302818' }}>
                 {profile?.name || 'No name set'}
               </h2>
-              <p className="text-gray-500">{profile?.email}</p>
+              <p className="pixel-label" style={{ color: '#302818' }}>
+                {profile?.email}
+              </p>
             </div>
           </div>
           <div className="flex gap-6 text-center">
             <div>
-              <div className="text-lg font-bold text-gray-900">{profile?.followerCount ?? 0}</div>
-              <div className="text-xs text-gray-500">Followers</div>
+              <div className="pixel-heading" style={{ color: '#302818' }}>
+                {profile?.followerCount ?? 0}
+              </div>
+              <div className="pixel-label" style={{ color: '#302818' }}>
+                Followers
+              </div>
             </div>
             <div>
-              <div className="text-lg font-bold text-gray-900">{profile?.followingCount ?? 0}</div>
-              <div className="text-xs text-gray-500">Following</div>
+              <div className="pixel-heading" style={{ color: '#302818' }}>
+                {profile?.followingCount ?? 0}
+              </div>
+              <div className="pixel-label" style={{ color: '#302818' }}>
+                Following
+              </div>
             </div>
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="mt-3 pt-3 pixel-divider">
           <Link
             href="/discover"
-            className="text-sm text-green-600 hover:text-green-700 font-medium"
+            className="text-sm font-bold font-pixel"
+            style={{ color: '#2D8A2D' }}
           >
             Browse discover →
           </Link>
@@ -189,12 +208,14 @@ export default function ProfilePage() {
       </div>
 
       {/* My Gardens */}
-      <div className="mb-8 rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
+      <div className="pixel-card mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">My Gardens</h3>
+          <h3 className="pixel-heading" style={{ color: '#302818' }}>
+            My Gardens
+          </h3>
           <button
             onClick={() => setShowNewGarden(true)}
-            className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors"
+            className="btn-pixel-primary px-3 py-1.5 text-sm font-bold font-pixel"
           >
             + New garden
           </button>
@@ -207,13 +228,13 @@ export default function ProfilePage() {
               value={newGardenName}
               onChange={(e) => setNewGardenName(e.target.value)}
               placeholder="Garden name (e.g., Backyard Garden)"
-              className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              className="pixel-input flex-1"
               autoFocus
             />
             <button
               type="submit"
               disabled={creatingGarden || !newGardenName.trim()}
-              className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-500 disabled:opacity-50 transition-colors"
+              className="btn-pixel-primary px-4 py-2 text-sm font-bold font-pixel"
             >
               {creatingGarden ? 'Creating...' : 'Create'}
             </button>
@@ -223,7 +244,7 @@ export default function ProfilePage() {
                 setShowNewGarden(false);
                 setNewGardenName('');
               }}
-              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="btn-pixel-ghost px-3 py-2 text-sm font-bold font-pixel"
             >
               Cancel
             </button>
@@ -231,14 +252,14 @@ export default function ProfilePage() {
         )}
 
         {gardens.length === 0 && !showNewGarden ? (
-          <div className="text-center py-8">
+          <div className="text-center py-8 font-pixel">
             <div className="text-3xl mb-2">🌱</div>
-            <p className="text-gray-500 text-sm mb-3">
+            <p className="pixel-label mb-3" style={{ color: '#302818' }}>
               No gardens yet. Create your first garden to get started.
             </p>
             <button
               onClick={() => setShowNewGarden(true)}
-              className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors"
+              className="btn-pixel-primary px-4 py-2 text-sm font-bold font-pixel"
             >
               Create your first garden
             </button>
@@ -249,18 +270,21 @@ export default function ProfilePage() {
               <li key={garden.id}>
                 <Link
                   href={`/garden/${garden.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                  className="flex items-center justify-between p-3 hover:opacity-80 transition-colors group"
                 >
                   <div>
-                    <div className="font-medium text-gray-900 group-hover:text-green-700 transition-colors">
+                    <div
+                      className="font-bold font-pixel group-hover:text-green-600 transition-colors"
+                      style={{ color: '#302818' }}
+                    >
                       {garden.name}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="pixel-label" style={{ color: '#302818' }}>
                       {garden.zones.length} zone{garden.zones.length !== 1 ? 's' : ''}
                       {garden.location && ` · ${garden.location}`}
                     </div>
                   </div>
-                  <span className="text-gray-300 group-hover:text-green-500 transition-colors">
+                  <span className="font-bold" style={{ color: '#2D8A2D' }}>
                     →
                   </span>
                 </Link>
@@ -271,22 +295,36 @@ export default function ProfilePage() {
       </div>
 
       {/* Account Info */}
-      <div className="mb-8 rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Account Information</h3>
+      <div className="pixel-card mb-8">
+        <h3 className="pixel-heading mb-4" style={{ color: '#302818' }}>
+          Account Information
+        </h3>
         <dl className="space-y-3">
           <div className="flex justify-between">
-            <dt className="text-gray-500">Name</dt>
-            <dd className="font-medium text-gray-900">
-              {profile?.name || <span className="text-gray-400">Not set</span>}
+            <dt className="pixel-label" style={{ color: '#302818' }}>
+              Name
+            </dt>
+            <dd className="font-bold font-pixel" style={{ color: '#302818' }}>
+              {profile?.name || (
+                <span className="pixel-label" style={{ color: '#302818' }}>
+                  Not set
+                </span>
+              )}
             </dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-gray-500">Email</dt>
-            <dd className="font-medium text-gray-900">{profile?.email}</dd>
+            <dt className="pixel-label" style={{ color: '#302818' }}>
+              Email
+            </dt>
+            <dd className="font-bold font-pixel" style={{ color: '#302818' }}>
+              {profile?.email}
+            </dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-gray-500">Member since</dt>
-            <dd className="font-medium text-gray-900">
+            <dt className="pixel-label" style={{ color: '#302818' }}>
+              Member since
+            </dt>
+            <dd className="font-bold font-pixel" style={{ color: '#302818' }}>
               {profile?.createdAt
                 ? new Date(profile.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -300,14 +338,18 @@ export default function ProfilePage() {
       </div>
 
       {/* Language & Location Settings */}
-      <div className="rounded-lg bg-white p-6 shadow ring-1 ring-gray-900/5">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Language Settings</h3>
+      <div className="pixel-card">
+        <h3 className="pixel-heading mb-4" style={{ color: '#302818' }}>
+          Language Settings
+        </h3>
         <div className="mb-6">
           <LanguageSelector />
         </div>
 
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Location Settings</h3>
-        <p className="mb-4 text-sm text-gray-500">
+        <h3 className="pixel-heading mb-4" style={{ color: '#302818' }}>
+          Location Settings
+        </h3>
+        <p className="pixel-label mb-4" style={{ color: '#302818' }}>
           Set your location to get personalized planting recommendations based on your local
           climate.
         </p>
@@ -350,7 +392,11 @@ export default function ProfilePage() {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="latitude"
+                className="pixel-label block mb-1"
+                style={{ color: '#302818' }}
+              >
                 Latitude
               </label>
               <input
@@ -362,11 +408,15 @@ export default function ProfilePage() {
                 max="90"
                 defaultValue={profile?.latitude ?? ''}
                 placeholder="e.g., 45.5017"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="pixel-input w-full"
               />
             </div>
             <div>
-              <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="longitude"
+                className="pixel-label block mb-1"
+                style={{ color: '#302818' }}
+              >
                 Longitude
               </label>
               <input
@@ -378,13 +428,13 @@ export default function ProfilePage() {
                 max="180"
                 defaultValue={profile?.longitude ?? ''}
                 placeholder="e.g., -73.5673"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="pixel-input w-full"
               />
             </div>
           </div>
 
           {profile?.latitude && profile?.longitude && (
-            <p className="text-sm text-gray-500">
+            <p className="pixel-label" style={{ color: '#302818' }}>
               Current location: {profile.latitude.toFixed(4)}°, {profile.longitude.toFixed(4)}°
             </p>
           )}
@@ -393,11 +443,15 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={savingLocation}
-              className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-500 disabled:opacity-50"
+              className="btn-pixel-primary px-4 py-2 text-sm font-bold font-pixel"
             >
               {savingLocation ? 'Saving...' : 'Save Location'}
             </button>
-            {locationSuccess && <span className="text-sm text-green-600">Location updated!</span>}
+            {locationSuccess && (
+              <span className="text-sm font-bold font-pixel" style={{ color: '#2D8A2D' }}>
+                Location updated!
+              </span>
+            )}
           </div>
         </form>
       </div>

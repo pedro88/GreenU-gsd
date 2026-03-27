@@ -33,6 +33,8 @@ interface QuestTrackerProps {
  * Retro pixel-style quest tracker showing daily quests and seasonal challenges.
  * Displays progress bars, XP rewards, and completion status.
  * @param props.compact - If true, shows a condensed view for the profile sidebar
+ * @param root0
+ * @param root0.compact
  * @returns The quest tracker JSX
  */
 export function QuestTracker({ compact = false }: QuestTrackerProps) {

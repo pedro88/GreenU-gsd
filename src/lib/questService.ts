@@ -238,6 +238,7 @@ export async function updateQuestProgress(userId: string, eventType: string) {
 
 /**
  * Gets seasonal quests for the current month.
+ * @param userId
  * @returns Array of seasonal quests with user progress
  */
 export async function getSeasonalQuests(userId: string) {
@@ -262,6 +263,10 @@ export async function getSeasonalQuests(userId: string) {
 // Utilities
 // ============================================
 
+/**
+ *
+ * @param date
+ */
 function startOfUtcDay(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
@@ -269,6 +274,7 @@ function startOfUtcDay(date: Date): Date {
 /**
  * Returns all active quests (daily + seasonal) for a user.
  * Combines daily quests and seasonal quests in one response.
+ * @param userId
  */
 export async function getAllActiveQuests(userId: string) {
   const [daily, seasonal] = await Promise.all([getDailyQuests(userId), getSeasonalQuests(userId)]);

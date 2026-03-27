@@ -13,6 +13,7 @@ interface GameStats {
 const navLinks = [
   { href: '/discover', label: 'Discover', icon: '🌍' },
   { href: '/garden', label: 'My Garden', icon: '🌱' },
+  { href: '/articles', label: 'Articles', icon: '📖' },
   { href: '/calendar', label: 'Calendar', icon: '📅' },
   { href: '/messages', label: 'Messages', icon: '💬' },
   { href: '/clients', label: 'Clients', icon: '👥' },

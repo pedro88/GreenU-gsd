@@ -7,7 +7,7 @@ import { addXpByEvent } from '@/lib/xpService';
 /**
  * GET /api/gardens
  * List all gardens for the authenticated user (owned and collaborated).
- * @returns Array of gardens with zones, plots, and crops, or an error response
+ * Returns gardens with stats: zone count, plot count, crop count, collaborator count, follower count
  */
 export async function GET() {
   try {
@@ -20,7 +20,10 @@ export async function GET() {
     // Fetch owned gardens AND gardens where user is a collaborator
     const gardens = await prisma.garden.findMany({
       where: {
-        OR: [{ userId: session.user.id }, { collaborators: { some: { userId: session.user.id } } }],
+        OR: [
+          { userId: session.user.id },
+          { collaborators: { some: { userId: session.user.id } } },
+        ],
       },
       include: {
         zones: {
@@ -28,19 +31,84 @@ export async function GET() {
             plots: {
               include: {
                 crops: {
-                  include: {
-                    plantType: true,
+                  where: {
+                    status: {
+                      in: ['PLANTED', 'SEEDLING', 'VEGETATIVE', 'FLOWERING', 'FRUITING', 'HARVESTING'],
+                    },
                   },
                 },
               },
             },
           },
         },
+        collaborators: {
+          select: {
+            id: true,
+            role: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        },
+        tasks: {
+          where: {
+            status: { in: ['PENDING', 'IN_PROGRESS'] },
+          },
+          select: { id: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(gardens);
+    // Calculate stats for each garden
+    const gardensWithStats = gardens.map((garden) => {
+      let plotCount = 0;
+      let activeCropCount = 0;
+      let harvestCount = 0;
+
+      for (const zone of garden.zones) {
+        plotCount += zone.plots.length;
+        for (const plot of zone.plots) {
+          activeCropCount += plot.crops.length;
+        }
+      }
+
+      // Count collaborators (excluding owner)
+      const gardenerCount = garden.collaborators.length;
+
+      return {
+        ...garden,
+        stats: {
+          zoneCount: garden.zones.length,
+          plotCount,
+          activeCropCount,
+          harvestCount,
+          gardenerCount,
+          followerCount: garden.followerCount,
+          todoCount: garden.tasks.length,
+        },
+        // Include user's role in this garden
+        userRole: garden.userId === session.user.id
+          ? 'owner'
+          : garden.collaborators.find((c) => c.user.id === session.user.id)?.role || 'viewer',
+      };
+    });
+
+    // Also fetch main garden ID from user settings
+    const userSettings = await prisma.userSettings.findUnique({
+      where: { userId: session.user.id },
+      select: { mainGardenId: true },
+    });
+
+    return NextResponse.json({
+      gardens: gardensWithStats,
+      mainGardenId: userSettings?.mainGardenId,
+    });
   } catch (error) {
     console.error('Failed to fetch gardens:', error);
     return NextResponse.json({ error: 'Failed to fetch gardens' }, { status: 500 });
@@ -57,7 +125,7 @@ const createGardenSchema = z.object({
  * POST /api/gardens
  * Create a new garden.
  * @param request - The incoming HTTP request with garden data
- * @returns The created garden record with default zones, or an error response
+ * @returns The created garden record, or an error response
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -76,6 +144,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { name, description, location } = validation.data;
 
+    // Create the garden
     const garden = await prisma.garden.create({
       data: {
         userId: session.user.id,
@@ -85,8 +154,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
       include: {
         zones: true,
+        collaborators: true,
       },
     });
+
+    // Set as main garden if this is the user's first garden
+    const existingGardens = await prisma.garden.count({
+      where: { userId: session.user.id },
+    });
+
+    if (existingGardens === 1) {
+      // First garden - set as main
+      await prisma.userSettings.upsert({
+        where: { userId: session.user.id },
+        create: { userId: session.user.id, mainGardenId: garden.id },
+        update: { mainGardenId: garden.id },
+      });
+    }
 
     // Award XP for first garden creation
     addXpByEvent({

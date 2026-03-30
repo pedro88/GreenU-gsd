@@ -105,6 +105,10 @@ model UserSettings {
   avatarUrl       String?
   isPublic        Boolean  @default(true)
   
+  // Main Garden
+  mainGardenId    String?  // The garden the user is currently working on
+  mainGarden      Garden?  @relation("MainGarden", fields: [mainGardenId], references: [id])
+  
   // Location
   country         String?
   timezone        String?
@@ -187,6 +191,7 @@ model Garden {
   invites       GardenInvite[]
   conversations Conversation[]
   tasks         Task[]
+  mainGardenUsers UserSettings[] @relation("MainGarden")
 
   @@index([userId])
 }

@@ -353,7 +353,7 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-body text-sm text-ink-800">Harvest Reminders</p>
-                      <p className="font-body text-xs text-ink-500">Get notified when it's time to harvest</p>
+                      <p className="font-body text-xs text-ink-500">Get notified when it&apos;s time to harvest</p>
                     </div>
                     <Switch
                       checked={settings?.emailHarvest ?? true}
@@ -395,7 +395,7 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-body text-sm text-ink-800">🔥 Streak Reminders</p>
-                      <p className="font-body text-xs text-ink-500">Don't lose your streak!</p>
+                      <p className="font-body text-xs text-ink-500">Don&apos;t lose your streak!</p>
                     </div>
                     <Switch
                       checked={settings?.pushStreak ?? true}

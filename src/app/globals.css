@@ -17,6 +17,58 @@
     --color-highlight: #ffcc4d;
   }
 
+.dark {
+    --color-bg: #1a1510;
+    --color-border: #4a3c22;
+    --color-border-light: #6b5a3a;
+    --color-shadow: #0f0a06;
+    --color-text: #e8dfd0;
+    --color-muted: #a08060;
+    --color-accent: #ff7744;
+    --color-secondary: #4ca64c;
+    --color-highlight: #ffdd66;
+  }
+
+  .dark body {
+    background-color: #1a1510;
+    background-image: radial-gradient(circle, #2a2520 1px, transparent 1px);
+    color: #e8dfd0;
+  }
+
+  .dark .bg-cream-50 { background-color: #2a2520; }
+  .dark .bg-cream-100 { background-color: #3a3530; }
+  .dark .bg-cream-200 { background-color: #4a4540; }
+  .dark .bg-cream-300 { background-color: #5a5550; }
+
+  .dark .text-ink-900 { color: #e8dfd0; }
+  .dark .text-ink-800 { color: #d4c5a9; }
+  .dark .text-ink-700 { color: #b09158; }
+  .dark .text-ink-600 { color: #9a7b3c; }
+  .dark .text-ink-500 { color: #7a6330; }
+  .dark .text-ink-400 { color: #6b5a3a; }
+  .dark .text-ink-300 { color: #5c4b26; }
+
+  .dark .bg-ink-50 { background-color: #3a3530; }
+  .dark .bg-ink-100 { background-color: #2a2520; }
+  .dark .bg-ink-800 { background-color: #0f0a06; }
+  .dark .bg-ink-900 { background-color: #0a0705; }
+
+  .dark .border-ink-700 { border-color: #6b5a3a; }
+  .dark .border-ink-600 { border-color: #5c4b26; }
+  .dark .border-ink-300 { border-color: #4a3c22; }
+
+  .dark .shadow-\\[5px_5px_0px_0px_\\#302818\\] { box-shadow: 5px 5px 0px 0px #0f0a06; }
+  .dark .shadow-\\[3px_3px_0px_0px_\\#302818\\] { box-shadow: 3px 3px 0px 0px #0f0a06; }
+  .dark .shadow-\\[2px_2px_0px_0px_\\#302818\\] { box-shadow: 2px 2px 0px 0px #0f0a06; }
+
+  .dark .shadow-\\[inset_2px_2px_0px_0px_\\#5C4B26\\] { box-shadow: inset 2px 2px 0px 0px #6b5a3a; }
+  .dark .shadow-\\[inset_3px_3px_0px_0px_\\#5C4B26\\] { box-shadow: inset 3px 3px 0px 0px #6b5a3a; }
+  .dark .shadow-\\[inset_2px_2px_0px_0px_\\#B09158\\] { box-shadow: inset 2px 2px 0px 0px #4a3c22; }
+  .dark .shadow-\\[inset_-1px_-1px_0px_0px_\\#5C4B26\\] { box-shadow: inset -1px -1px 0px 0px #3a2f1a; }
+  .dark .shadow-\\[inset_-1px_-1px_0px_0px_\\#E8DFD0\\] { box-shadow: inset -1px -1px 0px 0px #2a2520; }
+
+  .dark .retro-nav { background-image: repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(107, 90, 58, 0.15) 8px, rgba(107, 90, 58, 0.15) 9px); }
+
   html {
     scroll-behavior: smooth;
   }

@@ -24,6 +24,7 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  cardVariants,
 } from './Card';
 
 // Badge

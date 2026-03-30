@@ -2,6 +2,10 @@
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Separator, SeparatorWithDots } from '@/components/ui/Separator';
 
 const features = [
   {
@@ -21,15 +25,15 @@ const features = [
 ];
 
 /**
- * Retro Sega/SNES-era landing page for greenU.
+ * Landing page for greenU with retro pixel styling.
  * Shows feature grid and sign-in/sign-up for unauthenticated users.
- * @returns The retro home page JSX
+ * Uses the greenU component library.
  */
 export default function HomePage() {
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)]">
+    <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero */}
       <section
         className="relative overflow-hidden px-4 py-20 text-center"
@@ -39,29 +43,27 @@ export default function HomePage() {
         }}
       >
         {/* Floating decorative plants */}
-        <div className="absolute top-8 left-8 text-5xl animate-float opacity-20">🌻</div>
+        <div className="absolute top-8 left-8 text-5xl animate-float opacity-20 select-none pointer-events-none">🌻</div>
         <div
-          className="absolute top-16 right-12 text-4xl animate-float opacity-20"
+          className="absolute top-16 right-12 text-4xl animate-float opacity-20 select-none pointer-events-none"
           style={{ animationDelay: '1s' }}
         >
           🌵
         </div>
         <div
-          className="absolute bottom-12 left-16 text-4xl animate-float opacity-20"
+          className="absolute bottom-12 left-16 text-4xl animate-float opacity-20 select-none pointer-events-none"
           style={{ animationDelay: '0.5s' }}
         >
           🍀
         </div>
 
         {/* Title */}
-        <div className="relative z-10">
-          <div className="inline-block mb-4 pixel-card px-6 py-3">
-            <span className="font-pixel text-xs font-bold tracking-widest text-terracotta-700 uppercase">
-              🌿 Welcome to
-            </span>
-          </div>
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <Badge variant="warning" className="inline-block mb-4">
+            🌿 Welcome to
+          </Badge>
 
-          <h1 className="pixel-heading-lg text-5xl md:text-6xl mb-4">
+          <h1 className="font-pixel text-4xl md:text-6xl font-bold text-ink-900 tracking-wide mb-4">
             green<span className="text-forest-500">U</span>
           </h1>
 
@@ -75,71 +77,61 @@ export default function HomePage() {
           {/* CTA buttons */}
           {session ? (
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <Link
-                href={{ pathname: '/garden' }}
-                className="btn-pixel btn-pixel-secondary text-sm px-6 py-3"
-              >
-                &gt; ENTER YOUR GARDEN
-              </Link>
-              <Link
-                href={{ pathname: '/discover' }}
-                className="btn-pixel btn-pixel-ghost text-sm px-6 py-3"
-              >
-                🌍 EXPLORE
-              </Link>
+              <Button variant="secondary" size="lg" asChild>
+                <Link href="/garden">▶ ENTER YOUR GARDEN</Link>
+              </Button>
+              <Button variant="ghost" size="lg" asChild>
+                <Link href="/discover">🌍 EXPLORE</Link>
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <Link
-                href={{ pathname: '/auth/signup' }}
-                className="btn-pixel btn-pixel-primary text-sm px-6 py-3"
-              >
-                &gt; START YOUR JOURNEY
-              </Link>
-              <Link
-                href={{ pathname: '/auth/signin' }}
-                className="btn-pixel btn-pixel-ghost text-sm px-6 py-3"
-              >
-                SIGN IN
-              </Link>
+              <Button variant="primary" size="lg" asChild>
+                <Link href="/auth/signup">▶ START YOUR JOURNEY</Link>
+              </Button>
+              <Button variant="ghost" size="lg" asChild>
+                <Link href="/auth/signin">SIGN IN</Link>
+              </Button>
             </div>
           )}
         </div>
       </section>
 
       {/* Divider */}
-      <div className="pixel-divider" />
+      <SeparatorWithDots className="max-w-5xl mx-auto px-4" />
 
       {/* Feature grid */}
       <section className="max-w-5xl mx-auto px-4 py-16">
-        <h2 className="section-header text-center mb-8">FEATURES</h2>
+        <h2 className="font-pixel text-lg font-bold text-ink-800 text-center mb-8 tracking-wider">
+          ✦ FEATURES ✦
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <div
+            <Card
               key={f.title}
-              className="pixel-card p-5 hover:scale-[1.02] transition-transform duration-75"
+              className="p-5 hover:-translate-y-1 transition-transform duration-75"
             >
               <div className="text-3xl mb-3">{f.icon}</div>
               <h3 className="font-pixel text-sm font-bold text-ink-800 mb-1 tracking-wide">
                 {f.title}
               </h3>
               <p className="font-body text-xs text-ink-500 leading-relaxed">{f.desc}</p>
-            </div>
+            </Card>
           ))}
         </div>
       </section>
 
       {/* Divider */}
-      <div className="pixel-divider" />
+      <SeparatorWithDots className="max-w-5xl mx-auto px-4" />
 
       {/* Bottom stats section */}
       <section className="max-w-5xl mx-auto px-4 py-12 text-center">
-        <div className="pixel-card-inset p-6 inline-block">
+        <Card variant="default" className="max-w-lg mx-auto p-6">
           <div className="font-pixel text-xs text-ink-500 tracking-widest uppercase mb-3">
             Your Garden Stats
           </div>
-          <div className="flex gap-8 justify-center">
+          <div className="flex gap-8 justify-center flex-wrap">
             {[
               { label: 'ZONES', value: '???' },
               { label: 'PLOTS', value: '???' },
@@ -155,14 +147,11 @@ export default function HomePage() {
           {session ? (
             <p className="mt-4 font-pixel text-xs text-ink-500">Sign in to view your stats &gt;</p>
           ) : (
-            <Link
-              href={{ pathname: '/auth/signup' }}
-              className="mt-4 inline-block btn-pixel btn-pixel-sm btn-pixel-ghost"
-            >
-              JOIN NOW &gt;
-            </Link>
+            <Button variant="ghost" size="sm" className="mt-4" asChild>
+              <Link href="/auth/signup">JOIN NOW &gt;</Link>
+            </Button>
           )}
-        </div>
+        </Card>
       </section>
 
       {/* Footer */}

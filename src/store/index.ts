@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import authReducer from './slices/authSlice';
+import settingsReducer from './slices/settingsSlice';
 import { authApi } from './api/authApi';
 import { gardenVisualizationApi } from './api/gardenVisualizationApi';
 import { calendarApi } from './api/calendarApi';
@@ -9,6 +10,7 @@ import { analyticsApi } from './api/analyticsApi';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    settings: settingsReducer,
     [authApi.reducerPath]: authApi.reducer,
     [gardenVisualizationApi.reducerPath]: gardenVisualizationApi.reducer,
     [calendarApi.reducerPath]: calendarApi.reducer,

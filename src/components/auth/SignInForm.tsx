@@ -1,96 +1,131 @@
 'use client';
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { SignInFormData, signInSchema } from '@/lib/validations/auth';
+import { DangerAlert } from '@/components/ui/Alert';
+import { Card, CardContent } from '@/components/ui/Card';
 
 /**
- * Sign-in form component with email/password fields and OAuth link.
- * Uses react-hook-form with Zod validation and calls NextAuth signIn.
- * @returns The sign-in form JSX
+ * Sign-in form component with email/password fields.
+ * Uses the greenU retro pixel UI components.
  */
 export function SignInForm() {
   const router = useRouter();
-  const [serverError, setServerError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
-  });
-
-  const onSubmit = async (data: SignInFormData) => {
-    setServerError('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
     setLoading(true);
 
     try {
+      const csrfResponse = await fetch('/api/auth/csrf');
+      const { csrfToken } = await csrfResponse.json();
+
       const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        email,
+        password,
+        csrfToken,
         redirect: false,
       });
 
       if (result?.error) {
-        setServerError('Invalid email or password');
+        setError('Invalid email or password — check your credentials!');
       } else {
         router.push('/');
         router.refresh();
       }
     } catch {
-      setServerError('An error occurred. Please try again.');
+      setError('Connection failed! Try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-        <p className="mt-2 text-sm text-gray-600">Sign in to access your gardens</p>
-      </div>
+    <Card className="w-full max-w-md">
+      <CardContent className="space-y-6 p-6">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="font-pixel text-xl font-bold text-ink-900 tracking-wide">
+            PLAYER SIGN IN
+          </h2>
+          <p className="mt-1 font-pixel text-xs text-ink-500 tracking-widest uppercase">
+            Enter your credentials
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {serverError && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{serverError}</div>
+        {/* ASCII decoration */}
+        <div className="font-mono text-xs text-ink-300 tracking-tight text-center">
+          ╔══════════════════════════════╗
+        </div>
+
+        {/* Error */}
+        {error && (
+          <DangerAlert>
+            <span className="font-pixel text-xs font-semibold tracking-wide">
+              ⚠ {error}
+            </span>
+          </DangerAlert>
         )}
 
-        <Input
-          label="Email address"
-          type="email"
-          autoComplete="email"
-          error={errors.email?.message}
-          {...register('email')}
-        />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="📧 EMAIL"
+            type="email"
+            autoComplete="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <Input
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          error={errors.password?.message}
-          {...register('password')}
-        />
+          <Input
+            label="🔑 PASSWORD"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <Button type="submit" className="w-full" loading={loading}>
-          Sign in
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            loading={loading}
+          >
+            ▶ START GAME
+          </Button>
+        </form>
 
-      <p className="text-center text-sm text-gray-600">
-        Don&apos;t have an account?{' '}
-        <Link href="/auth/signup" className="font-medium text-green-600 hover:text-green-500">
-          Create one
-        </Link>
-      </p>
-    </div>
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-[2px] bg-ink-200" />
+          <span className="font-pixel text-xs text-ink-400">✦</span>
+          <div className="flex-1 h-[2px] bg-ink-200" />
+        </div>
+
+        {/* Sign up link */}
+        <p className="text-center font-body text-sm text-ink-600">
+          No account yet?{' '}
+          <Link
+            href="/auth/signup"
+            className="font-pixel text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline underline-offset-2"
+          >
+            CREATE CHARACTER →
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
   );
 }

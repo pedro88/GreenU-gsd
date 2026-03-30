@@ -3,11 +3,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Card, CardContent } from '@/components/ui/Card';
 
 /**
  * User menu dropdown component showing avatar, name, and navigation links.
  * Displays sign-in button for unauthenticated users.
- * @returns The user menu dropdown JSX
+ * Uses the greenU retro pixel UI components.
  */
 export function UserMenu() {
   const { data: session } = useSession();
@@ -31,12 +35,9 @@ export function UserMenu() {
 
   if (!session?.user) {
     return (
-      <Link
-        href="/auth/signin"
-        className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
-      >
-        Sign in
-      </Link>
+      <Button variant="primary" size="sm" asChild>
+        <Link href="/auth/signin">SIGN IN</Link>
+      </Button>
     );
   }
 
@@ -54,68 +55,102 @@ export function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-500"
+        className="flex items-center gap-2 px-3 py-1.5 bg-cream-100 border-[2px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#302818] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-75"
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-green-500 text-xs">
-          {initials}
+        <Avatar className="h-7 w-7">
+          {session.user.image && <AvatarImage src={session.user.image} alt={session.user.name || ''} />}
+          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+        </Avatar>
+        <span className="hidden md:inline font-pixel text-xs font-semibold text-ink-800">
+          {session.user.name || 'Player'}
         </span>
-        <span className="hidden md:inline">{session.user.name || 'User'}</span>
         <svg
-          className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-ink-700 transition-transform duration-75 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          strokeWidth={3}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path strokeLinecap="square" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-          <div className="border-b border-gray-100 px-4 py-2">
-            <p className="text-sm font-medium text-gray-900">{session.user.name}</p>
-            <p className="truncate text-xs text-gray-500">{session.user.email}</p>
-          </div>
+        <Card className="absolute right-0 z-50 mt-2 w-56 p-0 overflow-hidden">
+          <CardContent className="p-0">
+            {/* User info header */}
+            <div className="px-4 py-3 bg-ink-100 border-b-[2px] border-ink-700">
+              <p className="font-pixel text-sm font-bold text-ink-900 truncate">
+                {session.user.name || 'Player'}
+              </p>
+              <p className="font-body text-xs text-ink-600 truncate mt-0.5">
+                {session.user.email}
+              </p>
+            </div>
 
-          <Link
-            href="/discover"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            🔍 Discover
-          </Link>
+            {/* Menu items */}
+            <div className="py-1">
+              <Link
+                href="/discover"
+                className="flex items-center gap-2 px-4 py-2 font-body text-sm text-ink-800 hover:bg-cream-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>🔍</span>
+                <span>Discover</span>
+              </Link>
 
-          <Link
-            href="/profile"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            My Gardens
-          </Link>
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 px-4 py-2 font-body text-sm text-ink-800 hover:bg-cream-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>🌱</span>
+                <span>My Gardens</span>
+              </Link>
 
-          <Link
-            href="/messages"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            💬 Messages
-          </Link>
+              <Link
+                href="/messages"
+                className="flex items-center gap-2 px-4 py-2 font-body text-sm text-ink-800 hover:bg-cream-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>💬</span>
+                <span>Messages</span>
+              </Link>
 
-          <Link
-            href="/clients"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            👥 Clients
-          </Link>
+              <Link
+                href="/clients"
+                className="flex items-center gap-2 px-4 py-2 font-body text-sm text-ink-800 hover:bg-cream-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>👥</span>
+                <span>Clients</span>
+              </Link>
 
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
-          >
-            Sign out
-          </button>
-        </div>
+              <Link
+                href="/settings"
+                className="flex items-center gap-2 px-4 py-2 font-body text-sm text-ink-800 hover:bg-cream-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>⚙️</span>
+                <span>Settings</span>
+              </Link>
+            </div>
+
+            {/* Divider */}
+            <div className="h-[2px] bg-ink-200 mx-2" />
+
+            {/* Sign out */}
+            <div className="py-1">
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="flex items-center gap-2 w-full px-4 py-2 font-body text-sm text-terracotta-600 hover:bg-terracotta-50 transition-colors"
+              >
+                <span>🚪</span>
+                <span>Sign out</span>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

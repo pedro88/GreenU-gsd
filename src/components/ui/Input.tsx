@@ -1,86 +1,44 @@
-import React from 'react';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | boolean;
 }
 
-/**
- * Retro pixel-style text input with inset shadow and chunky border.
- * @param root0 - destructured props
- * @param root0.label - Label text displayed above the input
- * @param root0.error - Error message displayed below the input
- * @param root0.className - Additional CSS classes
- * @returns The retro input JSX
- */
-export function Input({ label, error, className = '', ...props }: InputProps) {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, label, error, id, ...props }, ref) => {
+  const inputId = id || props.name;
+  
   return (
-    <div className="w-full">
-      {label && <label className="pixel-label">{label}</label>}
-      <input {...props} className={`pixel-input ${className}`} />
-      {error && (
-        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
-          {error}
-        </p>
+    <div className="space-y-1.5">
+      {label && (
+        <label htmlFor={inputId} className="block font-pixel text-xs font-semibold uppercase tracking-widest text-ink-700">
+          {label}
+        </label>
+      )}
+      <input
+        type={type}
+        id={inputId}
+        className={cn(
+          'flex h-10 w-full px-3 py-2 font-body text-sm text-ink-900',
+          'bg-cream-50 border-[3px] border-ink-700',
+          'shadow-[inset_2px_2px_0px_0px_#B09158,inset_-1px_-1px_0px_0px_#5C4B26]',
+          'placeholder:text-ink-600',
+          'focus:outline-none focus:border-terracotta-500 focus:shadow-[inset_2px_2px_0px_0px_#FF5526,inset_-1px_-1px_0px_0px_#CC3310]',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          'transition-all duration-75',
+          error && 'border-terracotta-600 focus:border-terracotta-700',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+      {error && typeof error === 'string' && (
+        <p className="font-body text-xs text-terracotta-600">{error}</p>
       )}
     </div>
   );
-}
+});
+Input.displayName = 'Input';
 
-/**
- * Retro pixel-style textarea with inset shadow and chunky border.
- * @param root0 - destructured props
- * @param root0.label - Label text displayed above the textarea
- * @param root0.error - Error message displayed below
- * @param root0.className - Additional CSS classes
- * @returns The retro textarea JSX
- */
-export function Textarea({
-  label,
-  error,
-  className = '',
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }) {
-  return (
-    <div className="w-full">
-      {label && <label className="pixel-label">{label}</label>}
-      <textarea {...props} className={`pixel-input resize-none min-h-[80px] ${className}`} />
-      {error && (
-        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/**
- * Retro pixel-style select dropdown with inset shadow and chunky border.
- * @param root0 - destructured props
- * @param root0.label - Label text displayed above the select
- * @param root0.error - Error message displayed below
- * @param root0.className - Additional CSS classes
- * @param root0.children - Select options
- * @returns The retro select JSX
- */
-export function Select({
-  label,
-  error,
-  className = '',
-  children,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string }) {
-  return (
-    <div className="w-full">
-      {label && <label className="pixel-label">{label}</label>}
-      <select {...props} className={`pixel-input cursor-pointer ${className}`}>
-        {children}
-      </select>
-      {error && (
-        <p className="mt-1 font-pixel text-xs text-terracotta-700 font-semibold tracking-wide">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+export { Input };

@@ -179,7 +179,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       metadata: { gardenId: garden.id },
     }).catch(console.error);
 
-    return NextResponse.json(garden, { status: 201 });
+    // Return garden with userRole and stats
+    return NextResponse.json({
+      ...garden,
+      stats: {
+        zoneCount: 0,
+        plotCount: 0,
+        activeCropCount: 0,
+        harvestCount: 0,
+        gardenerCount: 0,
+        followerCount: 0,
+        todoCount: 0,
+      },
+      userRole: 'owner',
+    }, { status: 201 });
   } catch (error) {
     console.error('Failed to create garden:', error);
     return NextResponse.json({ error: 'Failed to create garden' }, { status: 500 });

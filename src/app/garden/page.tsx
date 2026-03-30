@@ -267,7 +267,7 @@ export default function GardenHub() {
                   <Badge variant="success" size="sm">PUBLIC</Badge>
                 )}
                 <Badge variant="outline" size="sm">
-                  {currentGarden.userRole.toUpperCase()}
+                  {(currentGarden.userRole || 'OWNER').toUpperCase()}
                 </Badge>
               </div>
             </div>

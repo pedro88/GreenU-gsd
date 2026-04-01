@@ -48,7 +48,11 @@ export async function GET() {
             plantType: true,
             plot: {
               include: {
-                zone: true,
+                zone: {
+                  include: {
+                    garden: true,
+                  },
+                },
               },
             },
           },
@@ -61,6 +65,7 @@ export async function GET() {
     // Transform to activity feed format
     const activities = events.map((event) => {
       const zone = event.crop.plot.zone;
+      const garden = zone.garden;
       const plantType = event.crop.plantType;
       const plot = event.crop.plot;
 
@@ -98,6 +103,8 @@ export async function GET() {
         type: event.eventType,
         description,
         createdAt: event.createdAt.toISOString(),
+        gardenId: zone.gardenId,
+        gardenName: garden.name,
         zoneName: zone.name,
         plotName: plot.name,
         plantName: plantType.name,
@@ -127,6 +134,8 @@ export async function GET() {
         type: 'ZONE_CREATED' as const,
         description: `Created zone "${zone.name}"`,
         createdAt: zone.createdAt.toISOString(),
+        gardenId: zone.gardenId,
+        gardenName: zone.garden.name,
         zoneName: zone.name,
         plotName: null,
         plantName: null,
@@ -140,6 +149,8 @@ export async function GET() {
         type: 'PLOT_CREATED' as const,
         description: `Created plot "${plot.name}" in ${plot.zone.name}`,
         createdAt: plot.createdAt.toISOString(),
+        gardenId: plot.zone.gardenId,
+        gardenName: plot.zone.garden.name,
         zoneName: plot.zone.name,
         plotName: plot.name,
         plantName: null,

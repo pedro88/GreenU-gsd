@@ -25,13 +25,14 @@ export default async function middleware(request: NextRequest) {
     pathname === '/profile' ||
     pathname.startsWith('/profile') ||
     pathname.startsWith('/garden/') ||
+    (pathname.startsWith('/gardens/') && !pathname.startsWith('/gardens/public/')) ||
     pathname.startsWith('/messages') ||
     pathname.startsWith('/clients') ||
     pathname.startsWith('/calendar/') ||
     pathname.startsWith('/analytics/');
 
   const isPublicRoute =
-    pathname.startsWith('/gardens/') ||
+    pathname.startsWith('/gardens/public/') ||
     pathname === '/discover' ||
     pathname.startsWith('/discover');
 

@@ -78,7 +78,7 @@ export default function HomePage() {
           {session ? (
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Button variant="secondary" size="lg" asChild>
-                <Link href="/garden">▶ ENTER YOUR GARDEN</Link>
+                <Link href="/gardens/me">▶ ENTER YOUR GARDEN</Link>
               </Button>
               <Button variant="ghost" size="lg" asChild>
                 <Link href="/discover">🌍 EXPLORE</Link>

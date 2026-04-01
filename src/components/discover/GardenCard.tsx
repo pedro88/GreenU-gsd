@@ -62,7 +62,7 @@ export function GardenCard({ garden, followingIds, onFollow }: GardenCardProps) 
 
   return (
     <Link
-      href={`/gardens/${garden.id}`}
+      href={`/gardens/public/${garden.id}`}
       className="block pixel-card hover:shadow-lg transition-all group"
     >
       {/* Header */}

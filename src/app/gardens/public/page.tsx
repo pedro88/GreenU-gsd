@@ -1,7 +1,7 @@
 import { PublicGardenPageClient } from './PublicGardenPageClient';
 
 /**
- * Public Garden Page — /gardens/[id]
+ * Public Garden Page — /gardens/public/[id]
  * Accessible without authentication. Shows read-only garden view with follow button.
  * @param root0 - Props object
  * @param root0.params - Route parameters containing gardenId

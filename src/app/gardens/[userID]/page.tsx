@@ -42,6 +42,13 @@ export default async function UserGardensPage({
       description: true,
       isPublic: true,
       userId: true,
+      type: true,
+      width: true,
+      length: true,
+      sunExposure: true,
+      soilType: true,
+      tags: true,
+      coverImage: true,
       _count: {
         select: {
           zones: true,
@@ -79,6 +86,13 @@ export default async function UserGardensPage({
         description: g.description,
         isPublic: g.isPublic,
         userRole: g.userId === userID ? 'OWNER' : (g.collaborators[0]?.role || 'COLLABORATOR'),
+        type: g.type,
+        width: g.width,
+        length: g.length,
+        sunExposure: g.sunExposure,
+        soilType: g.soilType,
+        tags: g.tags || [],
+        coverImage: g.coverImage,
         stats: {
           zoneCount: g._count.zones,
           plotCount: g.zones.reduce((acc, z) => acc + z._count.plots, 0),

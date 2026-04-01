@@ -119,6 +119,13 @@ const createGardenSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   description: z.string().max(500).optional(),
   location: z.string().max(200).optional(),
+  type: z.enum(['COLLECTIF', 'AMATEUR', 'PROFESSIONNEL']).optional(),
+  width: z.number().positive().optional(),
+  length: z.number().positive().optional(),
+  sunExposure: z.enum(['NORTH', 'SOUTH', 'EAST', 'WEST']).optional(),
+  soilType: z.enum(['CLAY', 'SANDY', 'LOAMY', 'SILTY', 'PEAT', 'CHALK']).optional(),
+  tags: z.array(z.string()).optional(),
+  coverImage: z.string().url().optional().nullable(),
 });
 
 /**
@@ -142,7 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 });
     }
 
-    const { name, description, location } = validation.data;
+    const { name, description, location, type, width, length, sunExposure, soilType, tags, coverImage } = validation.data;
 
     // Create the garden
     const garden = await prisma.garden.create({
@@ -151,6 +158,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         name,
         description,
         location,
+        type,
+        width,
+        length,
+        sunExposure,
+        soilType,
+        tags,
+        coverImage,
       },
       include: {
         zones: true,

@@ -182,6 +182,16 @@ model Garden {
   location    String?
   isPublic    Boolean  @default(false)
   followerCount Int    @default(0)
+  
+  // Garden details
+  type          GardenType?  // COLLECTIF, AMATEUR, PROFESSIONNEL
+  width         Float?       // Width in meters
+  length        Float?       // Length in meters
+  sunExposure   SunExposure? // NORTH, SOUTH, EAST, WEST
+  soilType      SoilType?    // CLAY, SANDY, LOAMY, SILTY, PEAT, CHALK
+  tags          String[]     // User-defined tags like #biodynamie, #indoor
+  coverImage    String?      // URL to cover image
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -217,6 +227,28 @@ enum ZoneType {
   ORCHARD
   INDOOR
   TERRACE
+}
+
+enum GardenType {
+  COLLECTIF
+  AMATEUR
+  PROFESSIONNEL
+}
+
+enum SunExposure {
+  NORTH
+  SOUTH
+  EAST
+  WEST
+}
+
+enum SoilType {
+  CLAY
+  SANDY
+  LOAMY
+  SILTY
+  PEAT
+  CHALK
 }
 
 /// Plot - individual growing area within a zone

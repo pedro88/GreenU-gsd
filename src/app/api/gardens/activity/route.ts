@@ -123,7 +123,11 @@ export async function GET() {
       where: { zone: { garden: { id: { in: gardenIds } } } },
       orderBy: { createdAt: 'desc' },
       take: 5,
-      include: { zone: true },
+      include: { 
+        zone: {
+          include: { garden: true },
+        },
+      },
     });
 
     // Add zone creation events

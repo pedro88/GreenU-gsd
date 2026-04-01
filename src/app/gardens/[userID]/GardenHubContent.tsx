@@ -20,6 +20,13 @@ interface Garden {
   description: string | null;
   isPublic: boolean;
   userRole: string;
+  type: string | null;
+  width: number | null;
+  length: number | null;
+  sunExposure: string | null;
+  soilType: string | null;
+  tags: string[];
+  coverImage: string | null;
   stats: {
     zoneCount: number;
     plotCount: number;
@@ -57,6 +64,13 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newGardenName, setNewGardenName] = useState('');
   const [newGardenDescription, setNewGardenDescription] = useState('');
+  const [newGardenType, setNewGardenType] = useState<string>('');
+  const [newGardenWidth, setNewGardenWidth] = useState('');
+  const [newGardenLength, setNewGardenLength] = useState('');
+  const [newGardenSunExposure, setNewGardenSunExposure] = useState<string>('');
+  const [newGardenSoilType, setNewGardenSoilType] = useState<string>('');
+  const [newGardenTags, setNewGardenTags] = useState('');
+  const [newGardenCoverImage, setNewGardenCoverImage] = useState('');
   const [creating, setCreating] = useState(false);
   
   // Add zone dialog
@@ -116,6 +130,13 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
         body: JSON.stringify({
           name: newGardenName,
           description: newGardenDescription || undefined,
+          type: newGardenType || undefined,
+          width: newGardenWidth ? parseFloat(newGardenWidth) : undefined,
+          length: newGardenLength ? parseFloat(newGardenLength) : undefined,
+          sunExposure: newGardenSunExposure || undefined,
+          soilType: newGardenSoilType || undefined,
+          tags: newGardenTags ? newGardenTags.split(',').map(t => t.trim()).filter(Boolean) : undefined,
+          coverImage: newGardenCoverImage || undefined,
         }),
       });
       
@@ -124,8 +145,16 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
         setGardens((prev) => [{ ...garden, stats: { ...garden.stats, activeCropCount: 0, gardenerCount: 0, followerCount: 0, todoCount: 0 } }, ...prev]);
         setSelectedGardenId(garden.id);
         setShowCreateDialog(false);
+        // Reset form
         setNewGardenName('');
         setNewGardenDescription('');
+        setNewGardenType('');
+        setNewGardenWidth('');
+        setNewGardenLength('');
+        setNewGardenSunExposure('');
+        setNewGardenSoilType('');
+        setNewGardenTags('');
+        setNewGardenCoverImage('');
       }
     } catch (error) {
       console.error('Failed to create garden:', error);
@@ -264,9 +293,23 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
           <>
             <Separator />
             
+            {/* Garden header with cover image */}
+            {selectedGarden.coverImage && (
+              <div className="w-full h-48 -mx-6 -mt-4 mb-4 overflow-hidden rounded-none">
+                <img 
+                  src={selectedGarden.coverImage} 
+                  alt={selectedGarden.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+            
             {/* Garden header */}
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
                 <h2 className="font-pixel text-xl font-bold text-ink-900">
                   {selectedGarden.name}
                 </h2>
@@ -275,8 +318,51 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
                     {selectedGarden.description}
                   </p>
                 )}
+                
+                {/* Tags */}
+                {selectedGarden.tags && selectedGarden.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {selectedGarden.tags.map((tag, i) => (
+                      <span 
+                        key={i}
+                        className="font-pixel text-[10px] px-2 py-0.5 bg-forest-100 text-forest-700 border border-forest-300"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Meta badges */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedGarden.type && (
+                    <Badge variant="outline" size="sm">
+                      {selectedGarden.type === 'AMATEUR' && '🏡 Amateur'}
+                      {selectedGarden.type === 'COLLECTIF' && '👥 Collectif'}
+                      {selectedGarden.type === 'PROFESSIONNEL' && '💼 Pro'}
+                    </Badge>
+                  )}
+                  {selectedGarden.width && selectedGarden.length && (
+                    <Badge variant="outline" size="sm">
+                      📐 {selectedGarden.width}×{selectedGarden.length}m
+                    </Badge>
+                  )}
+                  {selectedGarden.sunExposure && (
+                    <Badge variant="outline" size="sm">
+                      {selectedGarden.sunExposure === 'SOUTH' && '☀️ South'}
+                      {selectedGarden.sunExposure === 'EAST' && '🌅 East'}
+                      {selectedGarden.sunExposure === 'WEST' && '🌇 West'}
+                      {selectedGarden.sunExposure === 'NORTH' && '🌲 North'}
+                    </Badge>
+                  )}
+                  {selectedGarden.soilType && (
+                    <Badge variant="outline" size="sm">
+                      🪱 {selectedGarden.soilType.toLowerCase()}
+                    </Badge>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {selectedGarden.isPublic && (
                   <Badge variant="success" size="sm">PUBLIC</Badge>
                 )}
@@ -359,11 +445,12 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
       
       {/* Create Garden Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>🆕 Create New Garden</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-5 py-4">
+            {/* Garden Name */}
             <Input
               label="Garden Name"
               placeholder="My Vegetable Garden"
@@ -371,17 +458,160 @@ export function GardenHubContent({ gardens: initialGardens, isOwnPage, username 
               onChange={(e) => setNewGardenName(e.target.value)}
               required
             />
+            
+            {/* Description */}
             <div>
               <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-1.5">
                 Description (optional)
               </label>
               <textarea
                 className="w-full px-4 py-3 bg-cream-100 border-[3px] border-ink-700 shadow-[inset_2px_2px_0px_0px_#E8DFD0,inset_-1px_-1px_0px_0px_#5C4B26] font-body text-sm resize-none"
-                rows={3}
+                rows={2}
                 placeholder="A brief description of your garden..."
                 value={newGardenDescription}
                 onChange={(e) => setNewGardenDescription(e.target.value)}
               />
+            </div>
+            
+            {/* Garden Type */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-2">
+                Type
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { value: 'AMATEUR', label: '🏡 Amateur', desc: 'Personal garden' },
+                  { value: 'COLLECTIF', label: '👥 Collectif', desc: 'Shared garden' },
+                  { value: 'PROFESSIONNEL', label: '💼 Pro', desc: 'Market garden' },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setNewGardenType(newGardenType === opt.value ? '' : opt.value)}
+                    className={`flex-1 min-w-[100px] px-3 py-2 border-[3px] font-pixel text-xs font-bold transition-all ${
+                      newGardenType === opt.value
+                        ? 'border-forest-500 bg-forest-100 text-forest-800 shadow-[2px_2px_0px_0px_#166534]'
+                        : 'border-ink-300 bg-cream-50 text-ink-600 hover:border-ink-500'
+                    }`}
+                  >
+                    <div>{opt.label}</div>
+                    <div className="font-body text-[10px] font-normal opacity-70">{opt.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Size */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-2">
+                Size (meters)
+              </label>
+              <div className="flex gap-3 items-center">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="Width"
+                    min="0"
+                    step="0.5"
+                    value={newGardenWidth}
+                    onChange={(e) => setNewGardenWidth(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-cream-100 border-[3px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] font-body text-sm"
+                  />
+                  <span className="font-pixel text-[10px] text-ink-500 mt-1 block text-center">Width</span>
+                </div>
+                <span className="font-pixel text-lg text-ink-400">×</span>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="Length"
+                    min="0"
+                    step="0.5"
+                    value={newGardenLength}
+                    onChange={(e) => setNewGardenLength(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-cream-100 border-[3px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] font-body text-sm"
+                  />
+                  <span className="font-pixel text-[10px] text-ink-500 mt-1 block text-center">Length</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Sun Exposure */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-2">
+                Sun Exposure
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { value: 'SOUTH', label: '☀️ South', desc: 'Full sun' },
+                  { value: 'EAST', label: '🌅 East', desc: 'Morning sun' },
+                  { value: 'WEST', label: '🌇 West', desc: 'Afternoon sun' },
+                  { value: 'NORTH', label: '🌲 North', desc: 'Shade' },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setNewGardenSunExposure(newGardenSunExposure === opt.value ? '' : opt.value)}
+                    className={`flex-1 min-w-[80px] px-3 py-2 border-[3px] font-pixel text-xs font-bold transition-all ${
+                      newGardenSunExposure === opt.value
+                        ? 'border-amber-500 bg-amber-100 text-amber-800 shadow-[2px_2px_0px_0px_#b45309]'
+                        : 'border-ink-300 bg-cream-50 text-ink-600 hover:border-ink-500'
+                    }`}
+                  >
+                    <div>{opt.label}</div>
+                    <div className="font-body text-[10px] font-normal opacity-70">{opt.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Soil Type */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-1.5">
+                Soil Type
+              </label>
+              <select
+                value={newGardenSoilType}
+                onChange={(e) => setNewGardenSoilType(e.target.value)}
+                className="w-full px-4 py-2.5 bg-cream-100 border-[3px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] font-body text-sm"
+              >
+                <option value="">Select soil type...</option>
+                <option value="LOAMY">Loamy (balanced, ideal)</option>
+                <option value="CLAY">Clay (heavy, retains water)</option>
+                <option value="SANDY">Sandy (drains fast)</option>
+                <option value="SILTY">Silty (smooth, fertile)</option>
+                <option value="PEAT">Peat (acidic, organic)</option>
+                <option value="CHALK">Chalk (alkaline)</option>
+              </select>
+            </div>
+            
+            {/* Tags */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-1.5">
+                Tags
+              </label>
+              <input
+                type="text"
+                placeholder="#biodynamie, #indoor, #permaculture..."
+                value={newGardenTags}
+                onChange={(e) => setNewGardenTags(e.target.value)}
+                className="w-full px-4 py-2.5 bg-cream-100 border-[3px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] font-body text-sm"
+              />
+              <p className="font-body text-[10px] text-ink-400 mt-1">Separate with commas</p>
+            </div>
+            
+            {/* Cover Image URL */}
+            <div>
+              <label className="block font-pixel text-xs font-semibold text-ink-600 uppercase tracking-wider mb-1.5">
+                Cover Image URL
+              </label>
+              <input
+                type="url"
+                placeholder="https://..."
+                value={newGardenCoverImage}
+                onChange={(e) => setNewGardenCoverImage(e.target.value)}
+                className="w-full px-4 py-2.5 bg-cream-100 border-[3px] border-ink-700 shadow-[2px_2px_0px_0px_#302818] font-body text-sm"
+              />
+              <p className="font-body text-[10px] text-ink-400 mt-1">Paste an image URL (optional)</p>
             </div>
           </div>
           <DialogFooter>
